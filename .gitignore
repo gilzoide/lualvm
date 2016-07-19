@@ -1,0 +1,9 @@
+# text backups
+*~
+*.swp
+
+# objects
+build/
+*.o
+*.so
+*.dll

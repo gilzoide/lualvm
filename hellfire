@@ -1,0 +1,14 @@
+hell.help = [[
+Welcome to lualvm hellfire build script!
+========================================
+
+Have a good day ;] ]]
+
+-- shadow build, please
+hell.outdir = 'build'
+
+-- our library name ^^
+libName = 'lualvm.so'
+
+-- source the real builds
+feedHellFire 'src/hellfire'
