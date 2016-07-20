@@ -2,7 +2,15 @@ hell.help = [[
 Welcome to lualvm hellfire build script!
 ========================================
 
-Have a good day ;] ]]
+Lua linker flags are found using `pkg-config` by default. To use a custom link
+flags, set the `luaLib` variable
+
+As with Lua, LLVM C++ flags are found using `llvm-config`. To use custom flags,
+set the `llvmFlags` variable.
+Likewise, LLVM linker flags are found using `llvm-config`. To use custom link
+flags, set the `llvmLib` variable.
+
+To build with debug symbols (-g compiler option), call with `Debug=1`]]
 
 -- shadow build, please
 hell.outdir = 'build'

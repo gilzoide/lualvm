@@ -41,8 +41,29 @@ void pushContext (lua_State *L, LLVMContextRef ctx) {
 }
 
 
+LLVMModuleRef checkModule (lua_State *L, int index) {
+	LLVMModuleRef *pointer, mod;
+	pointer = (LLVMModuleRef *) luaL_checkudata (L, index, MODULE_METATABLE);
+	mod = *pointer;
+	if (!mod) {
+		luaL_error (L, "null LLVMModule");
+	}
+
+	return mod;
+}
+
+
+void pushModule (lua_State *L, LLVMModuleRef mod) {
+	auto pointer = (LLVMModuleRef *) lua_newuserdata (L, sizeof (LLVMModuleRef));
+	*pointer = mod;
+	luaL_getmetatable (L, MODULE_METATABLE);
+	lua_setmetatable (L, -2);
+}
+
+
 //----    lualvm.core module    ----//
 
+/// Create a new Context
 int contextCreate (lua_State *L) {
 	auto ctx = LLVMContextCreate ();
 	pushContext (L, ctx);
@@ -50,27 +71,93 @@ int contextCreate (lua_State *L) {
 }
 
 
+/// Create a new Module in global Context
+int moduleCreate (lua_State *L) {
+	auto moduleName = luaL_checkstring (L, 1);
+	auto mod = LLVMModuleCreateWithName (moduleName);
+	pushModule (L, mod);
+	return 1;
+}
+
 //----    LLVMContext methods    ----//
 
+/// Dispose Context, don't call it directly (let Lua GC do it)
 int contextDispose (lua_State *L) {
 	auto ctx = checkContext (L, 1);
 	LLVMContextDispose (ctx);
 	return 0;
 }
 
-// MACRO that avoids mispelling =P
-#define sameName(f) \
-	{ #f, f }
 
+/// Create Module within Context
+int contextModuleCreate (lua_State *L) {
+	auto ctx = checkContext (L, 1);
+	auto moduleName = luaL_checkstring (L, 2);
+	auto mod = LLVMModuleCreateWithNameInContext (moduleName, ctx);
+	pushModule (L, mod);
+	return 1;
+}
+
+
+//----    LLVMModule methods    ----//
+
+/// Dispose Module, don't call it directly (let Lua GC do it)
+int moduleDispose (lua_State *L) {
+	auto mod = checkModule (L, 1);
+	LLVMDisposeModule (mod);
+	return 0;
+}
+
+
+/// Dump Module
+int moduleDump (lua_State *L) {
+	auto mod = checkModule (L, 1);
+	LLVMDumpModule (mod);
+	return 0;
+}
+
+
+/// Clone Module
+int moduleClone (lua_State *L) {
+	auto mod = checkModule (L, 1);
+	pushModule (L, LLVMCloneModule (mod));
+	return 1;
+}
+
+
+/// Get stringified version of Module, to be used in Lua as `tostring (mod)`
+int moduleToString (lua_State *L) {
+	auto mod = checkModule (L, 1);
+	auto str = LLVMPrintModuleToString (mod);
+	lua_pushstring (L, str);
+
+	// always remember to free your strings
+	LLVMDisposeMessage (str);
+	return 1;
+}
+
+
+//----    Lua Funcs to be registered    ----//
 // lualvm.core functions
 const struct luaL_Reg lualvmLib[] {
-	sameName (contextCreate),
+	{ "contextCreate", contextCreate },
+	{ "moduleCreate", moduleCreate },
 	{ NULL, NULL }
 };
 
 // LLVMContext Lua methods
 const struct luaL_Reg contextLib[] {
+	{ "moduleCreate", contextModuleCreate },
 	{ "__gc", contextDispose },
+	{ NULL, NULL }
+};
+
+// LLVMModule Lua methods
+const struct luaL_Reg moduleLib[] {
+	{ "clone", moduleClone },
+	{ "dump", moduleDump },
+	{ "__gc", moduleDispose },
+	{ "__tostring", moduleToString },
 	{ NULL, NULL }
 };
 
@@ -78,11 +165,10 @@ const struct luaL_Reg contextLib[] {
 extern "C" {
 	int luaopen_lualvm_core (lua_State *L) {
 		//--  context metatable  --//
-		luaL_newmetatable (L, CONTEXT_METATABLE);
-		luaL_setfuncs (L, contextLib, 0);
-		// and give it a nice name, already consuming it ^^
-		lua_pushliteral (L, CONTEXT_METATABLE);
-		lua_setfield (L, -2, "__metatable");
+		registerLuaMetatable (L, CONTEXT_METATABLE, contextLib);
+
+		//--  module metatable  --//
+		registerLuaMetatable (L, MODULE_METATABLE, moduleLib);
 
 		//--  the module itself  --//
 		luaL_newlib (L, lualvmLib);

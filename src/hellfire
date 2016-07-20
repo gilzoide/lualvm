@@ -1,22 +1,34 @@
 ----    LLVM    ----
-local llvm_config = assert (utils.shell ('llvm-config --cxxflags --system-libs --libs core'),
+local llvmFlags = llvmFlags or assert (utils.shell ('llvm-config --cxxflags'),
 		"Can't run `llvm-config`, do you have it in your PATH?")
+
+local llvmLib = llvmLib or assert (utils.shell ('llvm-config --system-libs --libs all'),
+		"Can't run `llvm-config`, do you have it in your PATH?")
+
 -- eliminate unwelcome '\n's
-llvm_config = llvm_config:gsub ('\n', ' ')
+llvmLib = llvmLib:gsub ('\n', ' ')
 
 
 ----    Lua    ----
 -- check for lua
-local luaLib = assert (utils.checkPkgConfig ('lua5.3', 'lua5.2', 'lua'),
+local luaLib = luaLib or assert (utils.checkPkgConfig ('lua5.3', 'lua5.2', 'lua'),
 		"Can't find lua lib through `pkg-config`, do you have it installed?")
 
 
 ----    now build    ----
 
 cpp.shared {
+	bin = 'clang++',
 	input = utils.glob '*.cpp',
-	flags = llvm_config,
-	links = luaLib,
+	flags = llvmFlags .. (Debug and ' -g' or ''),
+	links = { luaLib, llvmLib },
+	includes = { '../include', luaLib },
 	std = 'c++11',
-	output = libName,
+	outdir = utils.makePath (hell.outdir, 'lualvm'),
+	multinput = true,
+}
+
+copy {
+	input = utils.glob '*.lua',
+	multinput = true,
 }

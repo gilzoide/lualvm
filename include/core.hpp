@@ -20,10 +20,13 @@
 /** @file core.hpp
  * LLVMContext bindings, for internal lualvm use only
  */
+#pragma once
 
 #include "lualvm.hpp"
 
 #include <llvm-c/Core.h>
+
+//----    LLVMContext    ----//
 
 /// Lua LLVMContext metatable
 #define CONTEXT_METATABLE "LLVMContext"
@@ -46,6 +49,29 @@ LLVMContextRef checkContext (lua_State *L, int index);
  */
 void pushContext (lua_State *L, LLVMContextRef ctx);
 
+
+//----    LLVMModule    ----//
+
+/// Lua LLVMModule metatable
+#define MODULE_METATABLE "LLVMModule"
+
+/** Get a LLVMModuleRef from Lua stack    [-0, +0, e]
+ *
+ * @param L Lua state
+ * @param index Index of udata
+ *
+ * @return LLVM Module
+ *
+ * @throw If value is not a LLVMModule
+ */
+LLVMModuleRef checkModule (lua_State *L, int index);
+
+/** Push a LLVMModuleRef into the Lua stack (as light userdata)   [-0, +1, -]
+ *
+ * @param L Lua state
+ * @param ctx LLVM Context to be pushed
+ */
+void pushModule (lua_State *L, LLVMModuleRef mod);
 
 extern "C" {
 	/// Open sesa... , I mean, LLVM core!
