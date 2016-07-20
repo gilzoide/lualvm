@@ -1,19 +1,32 @@
 ## LuaLVM C++ stuff Makefile ##
 
+# C++ stuff
 src = $(wildcard *.cpp)
-objs = $(src:.cpp=.o)
-libSharedObj = $(pkgName).so
+objs = $(src:.cpp=.so)
 llvmFlags = $(shell llvm-config --cxxflags)
-llvmLinks = $(shell llvm-config --system-libs --libs core)
+llvmLinks = $(shell llvm-config --system-libs --libs)
 
 CXX = g++
-CXXFLAGS = $(llvmFlags)
+CXXFLAGS = -I$(includeDir) $(llvmFlags)
 
-all : $(objs)
-	$(CXX) -o $(buildDir)/$(libSharedObj) $^ -shared $(CXXFLAGS) $(llvmLinks)
+# Lua stuff
+luaSrc = $(wildcard *.lua)
+
+# Build #
+all : $(objs) lua
+
+
+# build each cpp file as a shared object
+%.so : %.o
+	$(CXX) -o $(libDir)/$@ $< -shared $(CXXFLAGS) $(llvmLinks)
 
 %.o : %.cpp
 	$(CXX) -o $@ -c $< $(CXXFLAGS)
+
+
+# and copy the ".lua" file(s)
+lua : $(luaSrc)
+	cp $^ $(buildDir)
 
 
 .PHONY : clean

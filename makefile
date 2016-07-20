@@ -12,6 +12,8 @@ CONFDIR = $(PREFIX)/etc
 
 # My stuff
 export buildDir := $(CURDIR)/build
+export libDir := $(buildDir)/$(pkgName)
+export includeDir := $(CURDIR)/include
 
 srcdir = src
 permissions = 644
@@ -22,14 +24,15 @@ all : buildDir lualvm
 
 buildDir :
 	@mkdir -p $(buildDir)
+	@mkdir -p $(libDir)
 
 lualvm :
 	$(MAKE) -C $(srcdir)
 
 
 install :
-	install -m $(permissions) $(buildDir)/*.so $(LIBDIR)
-	#install -m $(permissions) $(buildDir)/*.lua $(LUADIR)
+	install -m $(permissions) $(libDir)/*.so $(LIBDIR)
+	install -m $(permissions) $(buildDir)/*.lua $(LUADIR)
 
 .PHONY : clean
 clean :

@@ -31,4 +31,4 @@ Using [make](https://www.gnu.org/software/make/) directly:
 
 Documentation
 -------------
-Everything is documented [ldoc](https://github.com/stevedonovan/LDoc) style
+Everything is documented [doxygen](https://www.stack.nl/~dimitri/doxygen/) style
