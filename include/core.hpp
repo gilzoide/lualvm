@@ -40,14 +40,16 @@
  *
  * @throw If value is not a LLVMContext
  */
-LLVMContextRef checkContext (lua_State *L, int index);
+#define checkContext(L, i) \
+	lualvm_check<LLVMContextRef> (L, i, CONTEXT_METATABLE)
 
 /** Push a LLVMContextRef into the Lua stack (as light userdata)   [-0, +1, -]
  *
  * @param L Lua state
  * @param ctx LLVM Context to be pushed
  */
-void pushContext (lua_State *L, LLVMContextRef ctx);
+#define pushContext(L, ctx) \
+	lualvm_push<LLVMContextRef> (L, ctx, CONTEXT_METATABLE)
 
 
 //----    LLVMModule    ----//
@@ -64,14 +66,16 @@ void pushContext (lua_State *L, LLVMContextRef ctx);
  *
  * @throw If value is not a LLVMModule
  */
-LLVMModuleRef checkModule (lua_State *L, int index);
+#define checkModule(L, i) \
+	lualvm_check<LLVMModuleRef> (L, i, MODULE_METATABLE)
 
 /** Push a LLVMModuleRef into the Lua stack (as light userdata)   [-0, +1, -]
  *
  * @param L Lua state
  * @param ctx LLVM Context to be pushed
  */
-void pushModule (lua_State *L, LLVMModuleRef mod);
+#define pushModule(L, mod) \
+	lualvm_push<LLVMModuleRef> (L, mod, MODULE_METATABLE)
 
 extern "C" {
 	/// Open sesa... , I mean, LLVM core!

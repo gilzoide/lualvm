@@ -21,44 +21,23 @@
 
 //----    lualvm API    ----//
 
-LLVMContextRef checkContext (lua_State *L, int index) {
-	LLVMContextRef *pointer, ctx;
-	pointer = (LLVMContextRef *) luaL_checkudata (L, index, CONTEXT_METATABLE);
-	ctx = *pointer;
-	if (!ctx) {
-		luaL_error (L, "null LLVMContext");
-	}
 
-	return ctx;
-}
+/**
+ * Push a managed Context to Lua, so that it is garbage collected
+ * 
+ * Use only when creating new Contexts (it's not in the header, so it's cool)
+ */
+#define pushManagedContext(L, ctx) \
+	lualvm_pushManaged<LLVMContextRef> (L, ctx, CONTEXT_METATABLE)
 
 
-void pushContext (lua_State *L, LLVMContextRef ctx) {
-	auto pointer = (LLVMContextRef *) lua_newuserdata (L, sizeof (LLVMContextRef));
-	*pointer = ctx;
-	luaL_getmetatable (L, CONTEXT_METATABLE);
-	lua_setmetatable (L, -2);
-}
-
-
-LLVMModuleRef checkModule (lua_State *L, int index) {
-	LLVMModuleRef *pointer, mod;
-	pointer = (LLVMModuleRef *) luaL_checkudata (L, index, MODULE_METATABLE);
-	mod = *pointer;
-	if (!mod) {
-		luaL_error (L, "null LLVMModule");
-	}
-
-	return mod;
-}
-
-
-void pushModule (lua_State *L, LLVMModuleRef mod) {
-	auto pointer = (LLVMModuleRef *) lua_newuserdata (L, sizeof (LLVMModuleRef));
-	*pointer = mod;
-	luaL_getmetatable (L, MODULE_METATABLE);
-	lua_setmetatable (L, -2);
-}
+/**
+ * Push a managed Module to Lua, so that it is garbage collected
+ * 
+ * Use only when creating new Module (it's not in the header, so it's cool)
+ */
+#define pushManagedModule(L, mod) \
+	lualvm_pushManaged<LLVMModuleRef> (L, mod, MODULE_METATABLE)
 
 
 //----    lualvm.core module    ----//
@@ -66,7 +45,7 @@ void pushModule (lua_State *L, LLVMModuleRef mod) {
 /// Create a new Context
 int contextCreate (lua_State *L) {
 	auto ctx = LLVMContextCreate ();
-	pushContext (L, ctx);
+	pushManagedContext (L, ctx);
 	return 1;
 }
 
@@ -75,7 +54,7 @@ int contextCreate (lua_State *L) {
 int moduleCreate (lua_State *L) {
 	auto moduleName = luaL_checkstring (L, 1);
 	auto mod = LLVMModuleCreateWithName (moduleName);
-	pushModule (L, mod);
+	pushManagedModule (L, mod);
 	return 1;
 }
 
@@ -94,12 +73,29 @@ int contextModuleCreate (lua_State *L) {
 	auto ctx = checkContext (L, 1);
 	auto moduleName = luaL_checkstring (L, 2);
 	auto mod = LLVMModuleCreateWithNameInContext (moduleName, ctx);
-	pushModule (L, mod);
+	pushManagedModule (L, mod);
+	return 1;
+}
+
+
+/// Return "LLVMContext: <userdata>"
+int contextToString (lua_State *L) {
+	auto ctx = checkContext (L, 1);
+	lua_pushfstring (L, CONTEXT_METATABLE ": %p", (void *) ctx);
 	return 1;
 }
 
 
 //----    LLVMModule methods    ----//
+
+/// "Obtain the context to which this module is associated."
+int moduleGetContext (lua_State *L) {
+	auto mod = checkModule (L, 1);
+	auto ctx = LLVMGetModuleContext (mod);
+	pushContext (L, ctx);
+	return 1;
+}
+
 
 /// Dispose Module, don't call it directly (let Lua GC do it)
 int moduleDispose (lua_State *L) {
@@ -138,17 +134,19 @@ int moduleToString (lua_State *L) {
 
 
 //----    Lua Funcs to be registered    ----//
+
 // lualvm.core functions
 const struct luaL_Reg lualvmLib[] {
-	{ "contextCreate", contextCreate },
-	{ "moduleCreate", moduleCreate },
+	{ "Context", contextCreate },
+	{ "Module", moduleCreate },
 	{ NULL, NULL }
 };
 
 // LLVMContext Lua methods
 const struct luaL_Reg contextLib[] {
-	{ "moduleCreate", contextModuleCreate },
+	{ "Module", contextModuleCreate },
 	{ "__gc", contextDispose },
+	{ "__tostring", contextToString },
 	{ NULL, NULL }
 };
 
@@ -156,6 +154,7 @@ const struct luaL_Reg contextLib[] {
 const struct luaL_Reg moduleLib[] {
 	{ "clone", moduleClone },
 	{ "dump", moduleDump },
+	{ "getContext", moduleGetContext },
 	{ "__gc", moduleDispose },
 	{ "__tostring", moduleToString },
 	{ NULL, NULL }
