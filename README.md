@@ -31,4 +31,8 @@ Using [make](https://www.gnu.org/software/make/) directly:
 
 Documentation
 -------------
-Everything is documented [doxygen](https://www.stack.nl/~dimitri/doxygen/) style
+Inner code documented [doxygen](https://www.stack.nl/~dimitri/doxygen/) style,
+generate it with `doxygen`
+
+Lua modules documented using [ldoc](https://github.com/stevedonovan/LDoc),
+`cd ldoc` and generate docs with `ldoc .`

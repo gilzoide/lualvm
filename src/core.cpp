@@ -59,6 +59,15 @@ int moduleCreate (lua_State *L) {
 	return 1;
 }
 
+
+/// Get the Global Context
+int getGlobalContext (lua_State *L) {
+	auto ctx = LLVMGetGlobalContext ();
+	pushContext (L, ctx);
+	return 1;
+}
+
+
 //----    LLVMContext methods    ----//
 
 /// Dispose Context, don't call it directly (let Lua GC do it)
@@ -145,6 +154,7 @@ int moduleToString (lua_State *L) {
 const struct luaL_Reg lualvmLib[] {
 	{ "Context", contextCreate },
 	{ "Module", moduleCreate },
+	{ "getGlobalContext", getGlobalContext },
 	{ NULL, NULL }
 };
 

@@ -11,7 +11,7 @@ print ("Metatable do Module ", getmetatable (mod), '\n')
 print ("global module:dump ()")
 mod:dump ()
 
-mod = core.context.Module (ctx, 'inCtx')
+mod = ctx:Module ('inCtx')
 print ("\nctx print (module)")
 print (mod)
 

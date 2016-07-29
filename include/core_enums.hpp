@@ -35,18 +35,18 @@ void registerCoreEnums (lua_State *L) {
 	// index of table where enums will be registered
 	auto table = lua_gettop (L);
 
-/// Macro to insert a enum value into the table at top of the stack
+// Macro to insert a enum value into the table at top of the stack
 #define insertEnum(str, val) \
 	lua_pushinteger (L, val); \
 	lua_setfield (L, -2, str)
 
-/// As default, everything in LLVM-C is prefixed by "LLVM", so use it!
+// As default, everything in LLVM-C is prefixed by "LLVM", so use it!
 #define insertLLVMEnum(e) \
 	insertEnum (#e, LLVM ## e)
 
 	//--  Attributes  --//
 	lua_newtable (L);
-/// specific enum inserter for the Attribute Enum
+// specific enum inserter for the Attribute Enum
 #define insertAttribute(e) \
 	insertEnum (#e, LLVM ## e ## Attribute)
 
@@ -151,7 +151,7 @@ void registerCoreEnums (lua_State *L) {
 
 	//--  TypeKind  --//
 	lua_newtable (L);
-/// specific enum inserter for the TypeKind Enum
+// specific enum inserter for the TypeKind Enum
 #define insertTypeKind(t) \
 	insertEnum (#t, LLVM ## t ## TypeKind)
 
@@ -178,7 +178,7 @@ void registerCoreEnums (lua_State *L) {
 
 	//--  Linkage  --//
 	lua_newtable (L);
-/// specific enum inserter for the Linkage Enum
+// specific enum inserter for the Linkage Enum
 #define insertLinkage(l) \
 	insertEnum (#l, LLVM ## l ## Linkage)
 
@@ -205,7 +205,7 @@ void registerCoreEnums (lua_State *L) {
 
 	//--  Visibility  --//
 	lua_newtable (L);
-/// specific enum inserter for the Visibility Enum
+// specific enum inserter for the Visibility Enum
 #define insertVisibility(v) \
 	insertEnum (#v, LLVM ## v ## Visibility)
 
@@ -218,7 +218,7 @@ void registerCoreEnums (lua_State *L) {
 
 	//--  DLLStorageClass  --//
 	lua_newtable (L);
-/// specific enum inserter for the DLLStorageClass Enum
+// specific enum inserter for the DLLStorageClass Enum
 #define insertDLLStorageClass(sc) \
 	insertEnum (#sc, LLVM ## sc ## StorageClass)
 
@@ -231,7 +231,7 @@ void registerCoreEnums (lua_State *L) {
 
 	//--  CallConv  --//
 	lua_newtable (L);
-/// specific enum inserter for the CallConv Enum
+// specific enum inserter for the CallConv Enum
 #define insertCallConv(cc) \
 	insertEnum (#cc, LLVM ## cc ## CallConv)
 
@@ -248,7 +248,7 @@ void registerCoreEnums (lua_State *L) {
 
 	//--  IntPredicate  --//
 	lua_newtable (L);
-/// specific enum inserter for the IntPredicate Enum
+// specific enum inserter for the IntPredicate Enum
 #define insertIntPredicate(ip) \
 	insertEnum (#ip, LLVMInt ## ip)
 
@@ -268,7 +268,7 @@ void registerCoreEnums (lua_State *L) {
 
 	//--  RealPredicate  --//
 	lua_newtable (L);
-/// specific enum inserter for the RealPredicate Enum
+// specific enum inserter for the RealPredicate Enum
 #define insertRealPredicate(rp) \
 	insertEnum (#rp, LLVMReal ## rp)
 
@@ -294,7 +294,7 @@ void registerCoreEnums (lua_State *L) {
 
 	//--  LandingPadClauseTy  --//
 	lua_newtable (L);
-/// specific enum inserter for the LandingPadClauseTy Enum
+// specific enum inserter for the LandingPadClauseTy Enum
 #define insertLandingPadClauseTy(lp) \
 	insertEnum (#lp, LLVMLandingPad ## lp)
 
@@ -306,7 +306,7 @@ void registerCoreEnums (lua_State *L) {
 
 	//--  ThreadLocalMode  --//
 	lua_newtable (L);
-/// specific enum inserter for the ThreadLocalMode Enum
+// specific enum inserter for the ThreadLocalMode Enum
 #define insertThreadLocalMode(tl) \
 	insertEnum (#tl, LLVM ## tl ## TLSModel)
 
@@ -321,7 +321,7 @@ void registerCoreEnums (lua_State *L) {
 
 	//--  AtomicOrdering  --//
 	lua_newtable (L);
-/// specific enum inserter for the AtomicOrdering Enum
+// specific enum inserter for the AtomicOrdering Enum
 #define insertAtomicOrdering(ao) \
 	insertEnum (#ao, LLVMAtomicOrdering ## ao)
 
@@ -338,7 +338,7 @@ void registerCoreEnums (lua_State *L) {
 
 	//--  AtomicRMWBinOp  --//
 	lua_newtable (L);
-/// specific enum inserter for the AtomicRMWBinOp Enum
+// specific enum inserter for the AtomicRMWBinOp Enum
 #define insertAtomicRMWBinOp(armw) \
 	insertEnum (#armw, LLVMAtomicRMWBinOp ## armw)
 
@@ -359,7 +359,7 @@ void registerCoreEnums (lua_State *L) {
 
 	//--  DiagnosticSeverity  --//
 	lua_newtable (L);
-/// specific enum inserter for the DiagnosticSeverity Enum
+// specific enum inserter for the DiagnosticSeverity Enum
 #define insertDiagnosticSeverity(ds) \
 	insertEnum (#ds, LLVMDS ## ds)
 
