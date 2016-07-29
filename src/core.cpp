@@ -18,6 +18,7 @@
  */
 
 #include "core.hpp"
+#include "core_enums.hpp"
 
 //----    lualvm API    ----//
 
@@ -133,6 +134,11 @@ int moduleToString (lua_State *L) {
 }
 
 
+// Ok, Ok, enough with these macros
+#undef pushManagedContext
+#undef pushManagedModule
+
+
 //----    Lua Funcs to be registered    ----//
 
 // lualvm.core functions
@@ -163,14 +169,18 @@ const struct luaL_Reg moduleLib[] {
 
 extern "C" {
 	int luaopen_lualvm_core (lua_State *L) {
+		//--  the module itself  --//
+		luaL_newlib (L, lualvmLib);
+		registerCoreEnums (L);
+
 		//--  context metatable  --//
 		registerLuaMetatable (L, CONTEXT_METATABLE, contextLib);
+		lua_setfield (L, -2, "context");
 
 		//--  module metatable  --//
 		registerLuaMetatable (L, MODULE_METATABLE, moduleLib);
+		lua_setfield (L, -2, "module");
 
-		//--  the module itself  --//
-		luaL_newlib (L, lualvmLib);
 		return 1;
 	}
 }

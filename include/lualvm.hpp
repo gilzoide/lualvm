@@ -30,13 +30,10 @@
 
 
 /**
- * Auxiliary function that register types in Lua    [+0, -0, -]
+ * Auxiliary function that register types in Lua    [+1, -0, -]
  *
  * This function register a new Metatable, setting it's "__metatable" field to
  * `tname` and it's "__index" field to the functions, so methods can be used
- *
- * @note This function doesn't leave the new metatable in Lua stack, get it
- * with `luaL_getmetatable`
  *
  * @param L Lua state
  * @param tname Metatable name
@@ -48,18 +45,18 @@ void registerLuaMetatable (lua_State *L, const char *tname, const luaL_Reg *func
 	// create the metatable
 	luaL_newmetatable (L, tname);
 	luaL_setfuncs (L, funcs, nup);
-	// let "__index" point to the methods, so that we can use them
+	// let "__index" point to the methods, so that we can use them.
 	// duplicate the table, as it'll be consumed by `setfield`
 	lua_pushvalue (L, -1);
 	lua_setfield (L, -2, "__index");
-	// and give it a nice name, already consuming it ^^
+	// and give it a nice name
 	lua_pushstring (L, tname);
 	lua_setfield (L, -2, "__metatable");
 }
 
 
 /**
- * Template for getting types from Lua, checking metatable
+ * Template for getting types from Lua, checking it's metatable
  *
  * @param L Lua state
  * @param index Lua stack index
@@ -86,7 +83,15 @@ T lualvm_check (lua_State *L, int index, const char *metatable) {
 
 
 /**
+ * Push a managed object into Lua, associating `metatable` to it
  *
+ * @warning Objects pushed like this __will__ be garbage collected by Lua, so if
+ * using pointers as the object, push each object only once, and use
+ * non-managed pointers for references, or double free might happen
+ *
+ * @param L Lua state
+ * @param value Value of managed object to be pushed
+ * @param metatable Metatable to be associated to `value`
  */
 template<typename T>
 void lualvm_pushManaged (lua_State *L, T value, const char *metatable) {
@@ -97,6 +102,20 @@ void lualvm_pushManaged (lua_State *L, T value, const char *metatable) {
 }
 
 
+/**
+ * Push a non-managed object into Lua, associating `metatable` to it
+ *
+ * @warning Lua light userdata __must__ be pointers, so compilation is restricted
+ * to pointer types only (through a `static_assert`)
+ *
+ * @warning Objects pushed like this __will never__ be garbage collected by Lua, so
+ * if using pointers as the object, either push one managed instance of it, or
+ * deallocate it on C or with some method in Lua, or memory will leak
+ *
+ * @param L Lua state
+ * @param ptr Pointer to be pushed
+ * @param metatable Metatable to be associated to `value`
+ */
 template<typename T>
 void lualvm_push (lua_State *L, T ptr, const char *metatable) {
 	static_assert (std::is_pointer<T>::value, "Can't push Lua light userdata if it isn't a pointer!");

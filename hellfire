@@ -20,3 +20,9 @@ libName = 'lualvm.so'
 
 -- source the real builds
 feedHellFire 'src/hellfire'
+
+
+-- run the test!
+exclusiveTarget ('test', command {
+	command = 'cd ' .. hell.outdir .. ' && lua test.lua',
+})

@@ -34,7 +34,7 @@
 /** Get a LLVMContextRef from Lua stack    [-0, +0, e]
  *
  * @param L Lua state
- * @param index Index of udata
+ * @param i Index of udata
  *
  * @return LLVM Context
  *
@@ -60,7 +60,7 @@
 /** Get a LLVMModuleRef from Lua stack    [-0, +0, e]
  *
  * @param L Lua state
- * @param index Index of udata
+ * @param i Index of udata
  *
  * @return LLVM Module
  *
@@ -72,7 +72,7 @@
 /** Push a LLVMModuleRef into the Lua stack (as light userdata)   [-0, +1, -]
  *
  * @param L Lua state
- * @param ctx LLVM Context to be pushed
+ * @param mod LLVM Context to be pushed
  */
 #define pushModule(L, mod) \
 	lualvm_push<LLVMModuleRef> (L, mod, MODULE_METATABLE)
