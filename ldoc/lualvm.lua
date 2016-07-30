@@ -1,0 +1,2 @@
+--- @module lualvm
+-- lualvm main module, the one you'll probably use most

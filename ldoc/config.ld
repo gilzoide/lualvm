@@ -12,7 +12,7 @@ format = 'markdown'
 not_luadoc = true
 merge = true
 
-file = {'core'}
+file = {'lualvm.lua', 'core'}
 readme = '../README.md'
 
 --//  add custom types for parameters  //--

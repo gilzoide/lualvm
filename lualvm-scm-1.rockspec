@@ -1,7 +1,7 @@
 package = 'LuaLVM'
-version = '0.1-1'
+version = 'scm-1'
 source = {
-	url = 'https://github.com/gilzoide/lualvm',
+	url = 'git://github.com/gilzoide/lualvm',
 }
 description = {
 	summary = 'Lua wrapper for the LLVM-C API',

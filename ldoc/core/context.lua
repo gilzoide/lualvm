@@ -10,6 +10,14 @@
 -- @treturn LLVMModule
 function core.context.Module (ctx, name) end
 
+--- Return a unique non-zero ID for the specified metadata kind in context
+-- 
+-- @Context ctx Context
+-- @string mdKind Metadata kind name
+--
+-- @treturn int Metadata kind unique ID
+function core.context.getMDKindID (ctx, mdKind) end
+
 --- Get Context string representation, which is it's address (like lua functions)
 -- 
 -- @Context ctx Context

@@ -16,3 +16,10 @@ function core.getGlobalContext () end
 --
 -- @treturn LLVMModule The new Module
 function core.Module (name) end
+
+--- Return a unique non-zero ID for the specified metadata kind in global context
+-- 
+-- @string mdKind Metadata kind name
+--
+-- @treturn int Metadata kind unique ID
+function core.getMDKindID (mdKind) end

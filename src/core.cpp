@@ -68,6 +68,17 @@ int getGlobalContext (lua_State *L) {
 }
 
 
+/// Get MDKindId in global context
+int getMDKindID (lua_State *L) {
+	auto ctx = LLVMGetGlobalContext ();
+	size_t len;
+	auto name = luaL_checklstring (L, 1, &len);
+	auto mdKindId = LLVMGetMDKindIDInContext (ctx, name, len);
+	lua_pushinteger (L, mdKindId);
+	return 1;
+}
+
+
 //----    LLVMContext methods    ----//
 
 /// Dispose Context, don't call it directly (let Lua GC do it)
@@ -92,6 +103,17 @@ int contextModuleCreate (lua_State *L) {
 int contextToString (lua_State *L) {
 	auto ctx = checkContext (L, 1);
 	lua_pushfstring (L, CONTEXT_METATABLE ": %p", (void *) ctx);
+	return 1;
+}
+
+
+/// Return a unique non-zero ID for the specified metadata kind in Context
+int contextGetMDKindID (lua_State *L) {
+	auto ctx = checkContext (L, 1);
+	size_t len;
+	auto name = luaL_checklstring (L, 2, &len);
+	auto mdKindId = LLVMGetMDKindIDInContext (ctx, name, len);
+	lua_pushinteger (L, mdKindId);
 	return 1;
 }
 
@@ -131,6 +153,42 @@ int moduleClone (lua_State *L) {
 }
 
 
+/// Get the data layout from the Module
+int moduleGetDataLayout (lua_State *L) {
+	auto mod = checkModule (L, 1);
+	auto dataLayout = LLVMGetDataLayout (mod);
+	lua_pushstring (L, dataLayout);
+	return 1;
+}
+
+
+/// Set the data layout for Module
+int moduleSetDataLayout (lua_State *L) {
+	auto mod = checkModule (L, 1);
+	auto triple = luaL_optstring (L, 2, "");
+	LLVMSetDataLayout (mod, triple);
+	return 0;
+}
+
+
+/// Get target triple from Module
+int moduleGetTarget (lua_State *L) {
+	auto mod = checkModule (L, 1);
+	auto target = LLVMGetTarget (mod);
+	lua_pushstring (L, target);
+	return 1;
+}
+
+
+/// Set target triple for Module
+int moduleSetTarget (lua_State *L) {
+	auto mod = checkModule (L, 1);
+	auto triple = luaL_optstring (L, 2, "");
+	LLVMSetTarget (mod, triple);
+	return 0;
+}
+
+
 /// Get stringified version of Module, to be used in Lua as `tostring (mod)`
 int moduleToString (lua_State *L) {
 	auto mod = checkModule (L, 1);
@@ -140,6 +198,28 @@ int moduleToString (lua_State *L) {
 	// always remember to free your strings
 	LLVMDisposeMessage (str);
 	return 1;
+}
+
+
+/// Write Module to file
+int moduleToFile (lua_State *L) {
+	auto mod = checkModule (L, 1);
+	auto file = luaL_checkstring (L, 2);
+	// why not return the error directly in the function? Returns a bool, and
+	// writes error to a stack string =/
+	char *errmsg;
+	// success, send 'true', so it can be asserted
+	if (!LLVMPrintModuleToFile (mod, file, &errmsg)) {
+		lua_pushboolean (L, 1);
+		return 1;
+	}
+	// oops, error...
+	else {
+		lua_pushnil (L);
+		lua_pushfstring (L, "Can't write module to file: %s", errmsg);
+		LLVMDisposeMessage (errmsg);
+		return 2;
+	}
 }
 
 
@@ -155,12 +235,14 @@ const struct luaL_Reg lualvmLib[] {
 	{ "Context", contextCreate },
 	{ "Module", moduleCreate },
 	{ "getGlobalContext", getGlobalContext },
+	{ "getMDKindID", getMDKindID },
 	{ NULL, NULL }
 };
 
 // LLVMContext Lua methods
 const struct luaL_Reg contextLib[] {
 	{ "Module", contextModuleCreate },
+	{ "getMDKindID", contextGetMDKindID },
 	{ "__gc", contextDispose },
 	{ "__tostring", contextToString },
 	{ NULL, NULL }
@@ -171,6 +253,11 @@ const struct luaL_Reg moduleLib[] {
 	{ "clone", moduleClone },
 	{ "dump", moduleDump },
 	{ "getContext", moduleGetContext },
+	{ "getDataLayout", moduleGetDataLayout },
+	{ "setDataLayout", moduleSetDataLayout },
+	{ "getTarget", moduleGetTarget },
+	{ "setTarget", moduleSetTarget },
+	{ "toFile", moduleToFile },
 	{ "__gc", moduleDispose },
 	{ "__tostring", moduleToString },
 	{ NULL, NULL }

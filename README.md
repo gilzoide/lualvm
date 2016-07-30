@@ -34,5 +34,6 @@ Documentation
 Inner code documented [doxygen](https://www.stack.nl/~dimitri/doxygen/) style,
 generate it with `doxygen`
 
-Lua modules documented using [ldoc](https://github.com/stevedonovan/LDoc),
-`cd ldoc` and generate docs with `ldoc .`
+Lua API (the one you'll probably use) documented using
+[ldoc](https://github.com/stevedonovan/LDoc), `cd ldoc` and generate docs with
+`ldoc .`

@@ -18,8 +18,18 @@ print (mod)
 print ("\nctx module clone + dump")
 mod:clone ():dump ()
 
+assert (mod:toFile ('/mod'))
+
 print ('\nmodule:getContext ()')
 print (mod:getContext ())
+
+print ('\nmodule:getDataLayout ()')
+mod:setDataLayout ('e-m:o-p:32:32-f64:32:64-v64:32:64-v128:32:128-a:0:32-n32-S32')
+print (mod:getDataLayout (), '\n')
+
+print ('\nmodule:getTarget ()')
+mod:setTarget ()
+print (mod:getTarget (), '\n')
 
 -- Core enums
 function printaTanto (nome)
