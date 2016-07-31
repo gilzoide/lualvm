@@ -24,3 +24,4 @@ tparam_alias ('bool', 'bool')
 -- LLVM types
 tparam_alias ('Context', 'LLVMContext')
 tparam_alias ('Module', 'LLVMModule')
+tparam_alias ('Type', 'LLVMType')

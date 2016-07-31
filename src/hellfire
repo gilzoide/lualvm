@@ -17,16 +17,22 @@ local luaLib = luaLib or assert (utils.checkPkgConfig ('lua5.3', 'lua5.2', 'lua'
 
 ----    now build    ----
 
-cpp.shared {
-	bin = 'clang++',
-	input = utils.glob '*.cpp',
-	flags = llvmFlags .. (Debug and ' -g' or ''),
-	links = { luaLib, llvmLib },
-	includes = { '../include', luaLib },
-	std = 'c++11',
-	outdir = utils.makePath (hell.outdir, 'lualvm'),
-	multinput = true,
-}
+--- Module builder, for building each module from it's directory
+local function buildModule (dir)
+	cpp.shared {
+		bin = 'clang++',
+		input = utils.glob (utils.makePath (dir, '*.cpp')),
+		flags = llvmFlags .. (Debug and ' -g' or ''),
+		links = { luaLib, llvmLib },
+		includes = { '../include', luaLib },
+		std = 'c++11',
+		outdir = utils.makePath (hell.outdir, 'lualvm'),
+		output = dir,
+	}
+end
+
+-- build each module, pliz
+buildModule ('core')
 
 copy {
 	input = utils.glob '*.lua',

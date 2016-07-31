@@ -35,7 +35,7 @@ void registerCoreEnums (lua_State *L) {
 	// index of table where enums will be registered
 	auto table = lua_gettop (L);
 
-// Macro to insert a enum value into the table at top of the stack
+// Macro to insert a enum value into the table at top of the stack.
 #define insertEnum(str, val) \
 	lua_pushinteger (L, val); \
 	lua_setfield (L, -2, str)

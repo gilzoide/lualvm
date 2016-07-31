@@ -40,7 +40,7 @@
  * @param funcs Functions to be registered
  * @param nup Number of upvalues
  */
-void registerLuaMetatable (lua_State *L, const char *tname, const luaL_Reg *funcs
+inline void registerLuaMetatable (lua_State *L, const char *tname, const luaL_Reg *funcs
 		, int nup = 0) {
 	// create the metatable
 	luaL_newmetatable (L, tname);

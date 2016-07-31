@@ -51,6 +51,14 @@
 #define pushContext(L, ctx) \
 	lualvm_push<LLVMContextRef> (L, ctx, CONTEXT_METATABLE)
 
+/**
+ * Push a managed Context to Lua, so that it is garbage collected
+ * 
+ * Use only when creating new Contexts
+ */
+#define pushManagedContext(L, ctx) \
+	lualvm_pushManaged<LLVMContextRef> (L, ctx, CONTEXT_METATABLE)
+
 
 //----    LLVMModule    ----//
 
@@ -72,13 +80,60 @@
 /** Push a LLVMModuleRef into the Lua stack (as light userdata)   [-0, +1, -]
  *
  * @param L Lua state
- * @param mod LLVM Context to be pushed
+ * @param mod LLVM Module to be pushed
  */
 #define pushModule(L, mod) \
 	lualvm_push<LLVMModuleRef> (L, mod, MODULE_METATABLE)
 
+/**
+ * Push a managed Module to Lua, so that it is garbage collected
+ * 
+ * Use only when creating new Modules
+ */
+#define pushManagedModule(L, mod) \
+	lualvm_pushManaged<LLVMModuleRef> (L, mod, MODULE_METATABLE)
+
+
+//----    LLVMType    ----//
+
+/// Lua LLVMType metatable
+#define TYPE_METATABLE "LLVMType"
+
+/** Get a LLVMTypeRef from Lua stack    [-0, +0, e]
+ *
+ * @param L Lua state
+ * @param i Index of udata
+ *
+ * @return LLVM Type
+ *
+ * @throw If value is not a LLVMType
+ */
+#define checkType(L, i) \
+	lualvm_check<LLVMTypeRef> (L, i, TYPE_METATABLE)
+
+/** Push a LLVMTypeRef into the Lua stack (as light userdata)   [-0, +1, -]
+ *
+ * @param L Lua state
+ * @param ty LLVM Type to be pushed
+ */
+#define pushType(L, ty) \
+	lualvm_push<LLVMTypeRef> (L, ty, TYPE_METATABLE)
+
+
+//----    Core    ----//
 extern "C" {
 	/// Open sesa... , I mean, LLVM core!
 	int luaopen_lualvm_core (lua_State *L);
+
+	// I know these constructs don't work for requiring directly from Lua,
+	// but it's nice to put it according to the music. Maybe separate it all
+	// later
+
+	/// and core.context
+	int luaopen_lualvm_core_context (lua_State *L);
+	/// core.module
+	int luaopen_lualvm_core_module (lua_State *L);
+	/// core.ty... ah, you got it, right?
+	int luaopen_lualvm_core_type (lua_State *L);
 }
 

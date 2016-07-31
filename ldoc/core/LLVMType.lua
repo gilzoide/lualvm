@@ -1,0 +1,5 @@
+--- @classmod LLVMType
+-- LLVM Types
+-- 
+-- Every method here is a function from the `lualvm.core.type` module
+-- applied to self

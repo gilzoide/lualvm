@@ -18,107 +18,6 @@
  */
 
 #include "core.hpp"
-#include "core_enums.hpp"
-
-//----    lualvm API    ----//
-
-
-/**
- * Push a managed Context to Lua, so that it is garbage collected
- * 
- * Use only when creating new Contexts (it's not in the header, so it's cool)
- */
-#define pushManagedContext(L, ctx) \
-	lualvm_pushManaged<LLVMContextRef> (L, ctx, CONTEXT_METATABLE)
-
-
-/**
- * Push a managed Module to Lua, so that it is garbage collected
- * 
- * Use only when creating new Module (it's not in the header, so it's cool)
- */
-#define pushManagedModule(L, mod) \
-	lualvm_pushManaged<LLVMModuleRef> (L, mod, MODULE_METATABLE)
-
-
-//----    lualvm.core module    ----//
-
-/// Create a new Context
-int contextCreate (lua_State *L) {
-	auto ctx = LLVMContextCreate ();
-	pushManagedContext (L, ctx);
-	return 1;
-}
-
-
-/// Create a new Module in global Context
-int moduleCreate (lua_State *L) {
-	auto moduleName = luaL_checkstring (L, 1);
-	auto mod = LLVMModuleCreateWithName (moduleName);
-	pushManagedModule (L, mod);
-	return 1;
-}
-
-
-/// Get the Global Context
-int getGlobalContext (lua_State *L) {
-	auto ctx = LLVMGetGlobalContext ();
-	pushContext (L, ctx);
-	return 1;
-}
-
-
-/// Get MDKindId in global context
-int getMDKindID (lua_State *L) {
-	auto ctx = LLVMGetGlobalContext ();
-	size_t len;
-	auto name = luaL_checklstring (L, 1, &len);
-	auto mdKindId = LLVMGetMDKindIDInContext (ctx, name, len);
-	lua_pushinteger (L, mdKindId);
-	return 1;
-}
-
-
-//----    LLVMContext methods    ----//
-
-/// Dispose Context, don't call it directly (let Lua GC do it)
-int contextDispose (lua_State *L) {
-	auto ctx = checkContext (L, 1);
-	LLVMContextDispose (ctx);
-	return 0;
-}
-
-
-/// Create Module within Context
-int contextModuleCreate (lua_State *L) {
-	auto ctx = checkContext (L, 1);
-	auto moduleName = luaL_checkstring (L, 2);
-	auto mod = LLVMModuleCreateWithNameInContext (moduleName, ctx);
-	pushManagedModule (L, mod);
-	return 1;
-}
-
-
-/// Return "LLVMContext: <userdata>"
-int contextToString (lua_State *L) {
-	auto ctx = checkContext (L, 1);
-	lua_pushfstring (L, CONTEXT_METATABLE ": %p", (void *) ctx);
-	return 1;
-}
-
-
-/// Return a unique non-zero ID for the specified metadata kind in Context
-int contextGetMDKindID (lua_State *L) {
-	auto ctx = checkContext (L, 1);
-	size_t len;
-	auto name = luaL_checklstring (L, 2, &len);
-	auto mdKindId = LLVMGetMDKindIDInContext (ctx, name, len);
-	lua_pushinteger (L, mdKindId);
-	return 1;
-}
-
-
-//----    LLVMModule methods    ----//
 
 /// "Obtain the context to which this module is associated."
 int moduleGetContext (lua_State *L) {
@@ -223,33 +122,17 @@ int moduleToFile (lua_State *L) {
 }
 
 
-// Ok, Ok, enough with these macros
-#undef pushManagedContext
-#undef pushManagedModule
+/// Set inline assembly for a module
+int moduleSetInlineAsm (lua_State *L) {
+	auto mod = checkModule (L, 1);
+	auto inlineAsm = luaL_checkstring (L, 2);
+	LLVMSetModuleInlineAsm (mod, inlineAsm);
+	return 0;
+}
 
-
-//----    Lua Funcs to be registered    ----//
-
-// lualvm.core functions
-const struct luaL_Reg lualvmLib[] {
-	{ "Context", contextCreate },
-	{ "Module", moduleCreate },
-	{ "getGlobalContext", getGlobalContext },
-	{ "getMDKindID", getMDKindID },
-	{ NULL, NULL }
-};
-
-// LLVMContext Lua methods
-const struct luaL_Reg contextLib[] {
-	{ "Module", contextModuleCreate },
-	{ "getMDKindID", contextGetMDKindID },
-	{ "__gc", contextDispose },
-	{ "__tostring", contextToString },
-	{ NULL, NULL }
-};
 
 // LLVMModule Lua methods
-const struct luaL_Reg moduleLib[] {
+const struct luaL_Reg lib[] {
 	{ "clone", moduleClone },
 	{ "dump", moduleDump },
 	{ "getContext", moduleGetContext },
@@ -258,26 +141,15 @@ const struct luaL_Reg moduleLib[] {
 	{ "getTarget", moduleGetTarget },
 	{ "setTarget", moduleSetTarget },
 	{ "toFile", moduleToFile },
+	{ "setInlineAsm", moduleSetInlineAsm },
 	{ "__gc", moduleDispose },
 	{ "__tostring", moduleToString },
 	{ NULL, NULL }
 };
-
-
 extern "C" {
-	int luaopen_lualvm_core (lua_State *L) {
-		//--  the module itself  --//
-		luaL_newlib (L, lualvmLib);
-		registerCoreEnums (L);
-
-		//--  context metatable  --//
-		registerLuaMetatable (L, CONTEXT_METATABLE, contextLib);
-		lua_setfield (L, -2, "context");
-
+	int luaopen_lualvm_core_module (lua_State *L) {
 		//--  module metatable  --//
-		registerLuaMetatable (L, MODULE_METATABLE, moduleLib);
-		lua_setfield (L, -2, "module");
-
+		registerLuaMetatable (L, MODULE_METATABLE, lib);
 		return 1;
 	}
 }
