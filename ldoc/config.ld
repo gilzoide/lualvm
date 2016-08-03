@@ -21,6 +21,7 @@ tparam_alias ('string', 'string')
 tparam_alias ('number', 'number')
 tparam_alias ('int', 'int')
 tparam_alias ('bool', 'bool')
+tparam_alias ('table', 'table')
 -- LLVM types
 tparam_alias ('Context', 'LLVMContext')
 tparam_alias ('Module', 'LLVMModule')

@@ -83,15 +83,112 @@ int getIntType (lua_State *L) {
 	pushType (L, LLVMIntType (numBits));
 	return 1;
 }
+
+
 /// Get Int type width
 int typeGetIntWidth (lua_State *L) {
-	auto ty = checkType (L, -1);
+	auto ty = checkType (L, 1);
 	auto width = LLVMGetIntTypeWidth (ty);
 	lua_pushinteger (L, width);
 	return 1;
 }
 //--  Float types --//
+constructBuiltinType (Half);
 constructBuiltinType (Float);
+constructBuiltinType (Double);
+constructBuiltinType (X86FP80);
+constructBuiltinType (FP128);
+constructBuiltinType (PPCFP128);
+//--  Function types --//
+/// Obtain the function type with the specified signature
+int typeFunction (lua_State *L) {
+	auto retType = checkType (L, 1);
+	unsigned paramCount;
+	// got table? If so, count params
+	if (!lua_isnoneornil (L, 2)) {
+		lua_len (L, 2);
+		paramCount = lua_tointeger (L, -1);
+		lua_pop (L, 1);
+	}
+	else {
+		paramCount = 0;
+	}
+	
+	// our parameters array, stack allocated =P
+	auto params = new LLVMTypeRef [paramCount];
+	// get each type from the table, and add it to the array
+	for (unsigned i = 0; i < paramCount; i++) {
+		lua_geti (L, 2, i + 1);
+		auto ty = checkType (L, -1);
+		params[i] = ty;
+	}
+	// and pop whatever we used in this
+	lua_pop (L, paramCount);
+
+	// construct the type, and push it
+	auto theType = LLVMFunctionType (retType, params, paramCount,
+			lua_toboolean (L, 3));
+	pushType (L, theType);
+
+	// delete the auxiliary array, pliz
+	delete[] params;
+
+	return 1;
+}
+
+
+/// Boolean if function is vararg
+int typeIsFunctionVarArg (lua_State *L) {
+	auto ty = checkType (L, 1);
+	// assert Function type
+	luaL_argcheck (L, LLVMGetTypeKind (ty) == LLVMFunctionTypeKind, 1,
+			"type should be a Function type");
+	lua_pushboolean (L, LLVMIsFunctionVarArg (ty));
+	return 1;
+}
+
+
+/// Get function's return type
+int typeGetReturn (lua_State *L) {
+	auto ty = checkType (L, 1);
+	// assert Function type
+	luaL_argcheck (L, LLVMGetTypeKind (ty) == LLVMFunctionTypeKind, 1,
+			"type should be a Function type");
+	pushType (L, LLVMGetReturnType (ty));
+	return 1;
+}
+
+
+/// Get the parameter count
+int typeCountParam (lua_State *L) {
+	auto ty = checkType (L, 1);
+	// assert Function type
+	luaL_argcheck (L, LLVMGetTypeKind (ty) == LLVMFunctionTypeKind, 1,
+			"type should be a Function type");
+	lua_pushinteger (L, LLVMCountParamTypes (ty));
+	return 1;
+}
+
+
+/// Get a table with the parameter types
+int typeGetParamTypes (lua_State *L) {
+	auto ty = checkType (L, 1);
+	// assert Function type
+	luaL_argcheck (L, LLVMGetTypeKind (ty) == LLVMFunctionTypeKind, 1,
+			"type should be a Function type");
+
+	auto paramCount = LLVMCountParamTypes (ty);
+	auto params = new LLVMTypeRef [paramCount];
+	LLVMGetParamTypes (ty, params);
+
+	lua_newtable (L);
+	for (unsigned i = 0; i < paramCount; i++) {
+		pushType (L, params[i]);
+		lua_seti (L, -2, i + 1);
+	}
+
+	return 1;
+}
 //--  Other types --//
 constructBuiltinType (Void);
 constructBuiltinType (Label);
@@ -115,7 +212,18 @@ const struct luaL_Reg lib[] {
 	{ "getInt", getIntType },
 	{ "getIntWidth", typeGetIntWidth },
 	// floats
+	{ "getHalf", getHalfType },
 	{ "getFloat", getFloatType },
+	{ "getDouble", getDoubleType },
+	{ "getX86FP80", getX86FP80Type },
+	{ "getFP128", getFP128Type },
+	{ "getPPCFP128", getPPCFP128Type },
+	// functions
+	{ "Function", typeFunction },
+	{ "isVarArg", typeIsFunctionVarArg },
+	{ "getReturn", typeGetReturn },
+	{ "__len", typeCountParam },
+	{ "getParamTypes", typeGetParamTypes },
 	// other
 	{ "getVoid", getVoidType },
 	{ "getLabel", getLabelType },

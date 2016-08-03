@@ -56,8 +56,9 @@ function setTarget (mod, triple) end
 -- @Module mod Module
 -- @string file Output file name
 --
--- @return `True` on success, `nil` on error
--- @return Error string on error
+-- @return[1] true
+-- @return[2] nil
+-- @return[2] error message
 function toFile (mod, file) end
 
 --- Get Module string representation, which is it's dump in IR text code
