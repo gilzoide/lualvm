@@ -17,7 +17,8 @@
  * Any bugs should be reported to <gilzoide@gmail.com>
  */
 
-#include "core.hpp"
+#include "core/module.hpp"
+#include "core/context.hpp"
 
 /// "Obtain the context to which this module is associated."
 int moduleGetContext (lua_State *L) {

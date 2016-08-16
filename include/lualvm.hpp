@@ -27,6 +27,8 @@
 
 // other stuff
 #include <type_traits>
+#include <iostream>
+using namespace std;
 
 
 /**
@@ -40,8 +42,8 @@
  * @param funcs Functions to be registered
  * @param nup Number of upvalues
  */
-inline void registerLuaMetatable (lua_State *L, const char *tname, const luaL_Reg *funcs
-		, int nup = 0) {
+inline void registerLuaMetatable (lua_State *L, const char *tname
+		, const luaL_Reg *funcs , int nup = 0) {
 	// create the metatable
 	luaL_newmetatable (L, tname);
 	luaL_setfuncs (L, funcs, nup);
@@ -56,7 +58,22 @@ inline void registerLuaMetatable (lua_State *L, const char *tname, const luaL_Re
 
 
 /**
- * Template for getting types from Lua, checking it's metatable
+ * Require module (from Lua), pushing it to the stack    [+1, -0, e]
+ *
+ * @param L Lua state
+ * @param module Module name
+ */
+inline void callRequire (lua_State *L, const char *module) {
+	lua_getglobal (L, "require");
+	lua_pushstring (L, module);
+	lua_call (L, 1, 1);
+}
+
+
+/**
+ * Template for getting types from Lua, checking it's metatable    [+0, -0, e]
+ *
+ * @note This is made to work with both light and full userdata
  *
  * @param L Lua state
  * @param index Lua stack index
@@ -83,7 +100,7 @@ T lualvm_check (lua_State *L, int index, const char *metatable) {
 
 
 /**
- * Push a managed object into Lua, associating `metatable` to it
+ * Push a managed object into Lua, associating `metatable` to it    [+1, -0, -]
  *
  * @warning Objects pushed like this __will__ be garbage collected by Lua, so if
  * using pointers as the object, push each object only once, and use
@@ -103,7 +120,7 @@ void lualvm_pushManaged (lua_State *L, T value, const char *metatable) {
 
 
 /**
- * Push a non-managed object into Lua, associating `metatable` to it
+ * Push a non-managed object into Lua, associating `metatable` to it (if not `nil`)    [+1, -0, -]
  *
  * @warning Lua light userdata __must__ be pointers, so compilation is restricted
  * to pointer types only (through a `static_assert`)
@@ -119,7 +136,12 @@ void lualvm_pushManaged (lua_State *L, T value, const char *metatable) {
 template<typename T>
 void lualvm_push (lua_State *L, T ptr, const char *metatable) {
 	static_assert (std::is_pointer<T>::value, "Can't push Lua light userdata if it isn't a pointer!");
-	lua_pushlightuserdata (L, ptr);
-	luaL_getmetatable (L, metatable);
-	lua_setmetatable (L, -2);
+	if (ptr) {
+		lua_pushlightuserdata (L, ptr);
+		luaL_getmetatable (L, metatable);
+		lua_setmetatable (L, -2);
+	}
+	else {
+		lua_pushnil (L);
+	}
 }

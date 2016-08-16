@@ -1,6 +1,10 @@
 --- @module lualvm.core.type
 -- [LLVM-C Type](http://www.llvm.org/docs/doxygen/html/group__LLVMCCoreType.html)
--- functions, usually accessed in Lua through the `LLVMType` methods
+-- functions, usually accessed in Lua through the `LLVMType` methods.
+--
+-- Types in LLVM are always uniqued within a context, so there's always only 1
+-- instance of a specific type. That said, types can be compared for equality
+-- with the expected behavior.
 
 --- Gets the TypeKind enumeration
 -- 
@@ -37,91 +41,21 @@ function __tostring (ty) end
 
 
 --------------------------------------------------------------------------------
--- Integer types
+-- Integer types methods
 -- @section Integer
-
---- Get i1 type in global context
---
--- @treturn LLVMType i1
-function getInt1 () end
-
---- Get i8 type in global context
---
--- @treturn LLVMType i8
-function getInt8 () end
-
---- Get i16 type in global context
---
--- @treturn LLVMType i16
-function getInt16 () end
-
---- Get i32 type in global context
---
--- @treturn LLVMType i32
-function getInt32 () end
-
---- Get i64 type in global context
---
--- @treturn LLVMType i64
-function getInt64 () end
-
---- Get i128 type in global context
---
--- @treturn LLVMType i128
-function getInt128 () end
-
---- Get iN type in global context
---
--- @int N Number of bits for integer type
---
--- @treturn LLVMType iN
-function getInt (N) end
 
 --- Get int bitwidth (number of bits).
 --
 -- If type is not an integer type, returns 0
 --
--- @treturn int Number of bits in int, or 0 if ain't integer
+-- @treturn int Number of bits in the int type
+--
+-- @raise If type ain't an Integer type
 function getIntWidth (ty) end
 
 
 --------------------------------------------------------------------------------
--- Floating Point types
--- @section Float
-
---- Get half type in global context
---
--- @treturn LLVMType half
-function getHalf () end
-
---- Get float type in global context
---
--- @treturn LLVMType float
-function getFloat () end
-
---- Get double type in global context
---
--- @treturn LLVMType double
-function getDouble () end
-
---- Get X86FP80 type in global context
---
--- @treturn LLVMType X86FP80
-function getX86FP80 () end
-
---- Get FP128 type in global context
---
--- @treturn LLVMType FP128
-function getFP128 () end
-
---- Get PPCFP128 type in global context
---
--- @treturn LLVMType PPCFP128
-function getPPCFP128 () end
-
-
---------------------------------------------------------------------------------
--- Function types
+-- Function types methods
 -- @section Function
 
 --- Get a function type consisting of the specified signature
@@ -129,9 +63,11 @@ function getPPCFP128 () end
 -- @Type returnType The return type
 -- @table[opt={}] paramTypes Table with the parameter types
 -- @bool[opt=false] isVarArg If function accepts variable arguments
+--
+-- @treturn LLVMType Function type
 function Function (returnType, paramTypes, isVarArg) end
 
---- Get wheter type `ty` is vararg
+--- Get whether type `ty` is vararg
 --
 -- @Type ty Type
 --
@@ -156,7 +92,7 @@ function getReturn (ty) end
 -- @treturn int Number of parameters
 --
 -- @raise If type ain't a Function type
-function __len (ty) end
+function countParams (ty) end
 
 --- Get a table with the function's parameter types
 --
@@ -167,21 +103,75 @@ function __len (ty) end
 -- @raise If type ain't a Function type
 function getParamTypes (ty) end
 
+
 --------------------------------------------------------------------------------
--- Other types
--- @section other
+-- Struct types methods
+-- @section Struct
 
---- Get void type in global context
+--- Get Struct's name
 --
--- @treturn LLVMType void
-function getVoid () end
+-- @Type ty Type
+--
+-- @treturn[0] string Name
+-- @treturn[1] nil For anonimous structs
+--
+-- @raise If type ain't a Struct type
+function getName (ty) end
 
---- Get label type in global context
+--- Set Struct body
 --
--- @treturn LLVMType label
-function getLabel () end
+-- @Type ty Type
+-- @table[opt={}] elemTypes Table with the element types
+-- @bool[opt=false] packed Should Struct be packed?
+--
+-- @raise If type ain't a Struct type
+function setBody (ty, elemTypes, packed) end
 
---- Get x86_mmx type in global context
+--- Get Struct's element count
 --
--- @treturn LLVMType x86_mmx
-function getX86MMX () end
+-- @Type ty Type
+--
+-- @treturn integer Element count
+--
+-- @raise If type ain't a Struct type
+function countElements (ty) end
+
+--- Get a table with Struct's element types
+--
+-- @Type ty Type
+--
+-- @treturn table Element types
+--
+-- @raise If type ain't a Struct type
+function getElementTypes (ty) end
+
+--- Get type at index `idx` in Struct.
+--
+-- Note that as Lua, index here starts from 1
+--
+-- @Type ty Type
+-- @int idx Index
+--
+-- @treturn[0] LLVMType
+-- @treturn[1] nil On invalid index
+--
+-- @raise If type ain't a Struct type
+function getTypeAtIndex (ty, idx) end
+
+--- Is Struct packed?
+--
+-- @Type ty Type
+--
+-- @treturn bool Whether a Struct is packed
+--
+-- @raise If type ain't a Struct type
+function isPacked (ty) end
+
+--- Is Struct opaque?
+--
+-- @Type ty Type
+--
+-- @treturn bool Whether a Struct is opaque
+--
+-- @raise If type ain't a Struct type
+function isOpaque (ty) end

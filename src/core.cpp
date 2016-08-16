@@ -18,7 +18,10 @@
  */
 
 #include "core.hpp"
-#include "core_enums.hpp"
+#include "core/context.hpp"
+#include "core/module.hpp"
+#include "core/type.hpp"
+#include "core/enums.hpp"
 
 /// Create a new Context
 int contextCreate (lua_State *L) {
@@ -71,13 +74,13 @@ extern "C" {
 		// it's enums
 		registerCoreEnums (L);
 		// core.context
-		luaopen_lualvm_core_context (L);
+		callRequire (L, "lualvm.core.context");
 		lua_setfield (L, -2, "context");
 		// core.module
-		luaopen_lualvm_core_module (L);
+		callRequire (L, "lualvm.core.module");
 		lua_setfield (L, -2, "module");
 		// core.type
-		luaopen_lualvm_core_type (L);
+		callRequire (L, "lualvm.core.type");
 		lua_setfield (L, -2, "type");
 
 		return 1;

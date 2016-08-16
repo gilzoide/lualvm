@@ -1,12 +1,12 @@
 ## LuaLVM C++ stuff Makefile ##
 
 # C++ stuff
-src = $(wildcard *.cpp)
+src = $(wildcard *.cpp) $(foreach m, $(modules), $(wildcard $m/*.cpp))
 objs = $(src:.cpp=.so)
 llvmFlags = $(shell llvm-config --cxxflags)
 llvmLinks = $(shell llvm-config --system-libs --libs)
 
-CXX = g++
+CXX = clang++
 CXXFLAGS = -Wall -O2 -I$(includeDir) $(llvmFlags)
 LINKS = $(llvmLinks)
 
@@ -17,7 +17,7 @@ luaSrc = $(wildcard *.lua)
 all : $(objs) lua
 
 
-# build each cpp file as a shared object
+# and each submodule in it's module's dir
 %.so : %.o
 	$(CXX) -o $(libDir)/$@ $< -shared $(CXXFLAGS) $(LINKS)
 

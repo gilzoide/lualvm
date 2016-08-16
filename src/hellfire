@@ -19,16 +19,22 @@ local luaLib = luaLib or assert (utils.checkPkgConfig ('lua5.3', 'lua5.2', 'lua'
 
 --- Module builder, for building each module from it's directory
 local function buildModule (dir)
-	cpp.shared {
+	-- submodules
+	local ext = {
 		bin = 'clang++',
 		input = utils.glob (utils.makePath (dir, '*.cpp')),
 		flags = llvmFlags .. (Debug and ' -g' or ''),
 		links = { luaLib, llvmLib },
 		includes = { '../include', luaLib },
 		std = 'c++11',
-		outdir = utils.makePath (hell.outdir, 'lualvm'),
-		output = dir,
+		outdir = utils.makePath (hell.outdir, 'lualvm', dir),
+		multinput = true,
 	}
+	cpp.shared (ext)
+	-- toplevel module
+	ext.input = dir .. '.cpp'
+	ext.outdir = utils.makePath (hell.outdir, 'lualvm')
+	cpp.shared (ext)
 end
 
 -- build each module, pliz

@@ -18,6 +18,27 @@
  */
 
 #include "core.hpp"
+#include "core/context.hpp"
+#include "core/type.hpp"
+
+/// Util: check if type is an Integer type
+void assertIntegerType (lua_State *L, LLVMTypeRef ty, int idx = 1) {
+	// assert Function type
+	luaL_argcheck (L, LLVMGetTypeKind (ty) == LLVMIntegerTypeKind, idx,
+			"type should be an Integer type");
+}
+/// Util: check if type is a Function type
+void assertFunctionType (lua_State *L, LLVMTypeRef ty, int idx = 1) {
+	// assert Function type
+	luaL_argcheck (L, LLVMGetTypeKind (ty) == LLVMFunctionTypeKind, idx,
+			"type should be a Function type");
+}
+/// Util: check if type is a Struct type
+void assertStructType (lua_State *L, LLVMTypeRef ty, int idx = 1) {
+	// assert Function type
+	luaL_argcheck (L, LLVMGetTypeKind (ty) == LLVMStructTypeKind, idx,
+			"type should be a Struct type");
+}
 
 /// Gets type kind, enum value
 int typeGetKind (lua_State *L) {
@@ -63,44 +84,17 @@ int typeToString (lua_State *L) {
 	return 1;
 }
 
-/// Macro that inserts builtin Type getters for global context
-#define constructBuiltinType(ty) \
-	int get ## ty ## Type (lua_State *L) { \
-		auto type = LLVM ## ty ## Type (); \
-		pushType (L, type); \
-		return 1; \
-	}
 //--  Int types  --//
-constructBuiltinType (Int1);
-constructBuiltinType (Int8);
-constructBuiltinType (Int16);
-constructBuiltinType (Int32);
-constructBuiltinType (Int64);
-constructBuiltinType (Int128);
-/// The arbitrary precision int
-int getIntType (lua_State *L) {
-	auto numBits = luaL_checkinteger (L, 1);
-	pushType (L, LLVMIntType (numBits));
-	return 1;
-}
-
-
 /// Get Int type width
 int typeGetIntWidth (lua_State *L) {
 	auto ty = checkType (L, 1);
+	assertIntegerType (L, ty);
 	auto width = LLVMGetIntTypeWidth (ty);
 	lua_pushinteger (L, width);
 	return 1;
 }
-//--  Float types --//
-constructBuiltinType (Half);
-constructBuiltinType (Float);
-constructBuiltinType (Double);
-constructBuiltinType (X86FP80);
-constructBuiltinType (FP128);
-constructBuiltinType (PPCFP128);
 //--  Function types --//
-/// Obtain the function type with the specified signature
+/// Obtain the function type with the specified signature in global context
 int typeFunction (lua_State *L) {
 	auto retType = checkType (L, 1);
 	unsigned paramCount;
@@ -140,9 +134,7 @@ int typeFunction (lua_State *L) {
 /// Boolean if function is vararg
 int typeIsFunctionVarArg (lua_State *L) {
 	auto ty = checkType (L, 1);
-	// assert Function type
-	luaL_argcheck (L, LLVMGetTypeKind (ty) == LLVMFunctionTypeKind, 1,
-			"type should be a Function type");
+	assertFunctionType (L, ty);
 	lua_pushboolean (L, LLVMIsFunctionVarArg (ty));
 	return 1;
 }
@@ -151,9 +143,7 @@ int typeIsFunctionVarArg (lua_State *L) {
 /// Get function's return type
 int typeGetReturn (lua_State *L) {
 	auto ty = checkType (L, 1);
-	// assert Function type
-	luaL_argcheck (L, LLVMGetTypeKind (ty) == LLVMFunctionTypeKind, 1,
-			"type should be a Function type");
+	assertFunctionType (L, ty);
 	pushType (L, LLVMGetReturnType (ty));
 	return 1;
 }
@@ -162,9 +152,7 @@ int typeGetReturn (lua_State *L) {
 /// Get the parameter count
 int typeCountParam (lua_State *L) {
 	auto ty = checkType (L, 1);
-	// assert Function type
-	luaL_argcheck (L, LLVMGetTypeKind (ty) == LLVMFunctionTypeKind, 1,
-			"type should be a Function type");
+	assertFunctionType (L, ty);
 	lua_pushinteger (L, LLVMCountParamTypes (ty));
 	return 1;
 }
@@ -173,9 +161,7 @@ int typeCountParam (lua_State *L) {
 /// Get a table with the parameter types
 int typeGetParamTypes (lua_State *L) {
 	auto ty = checkType (L, 1);
-	// assert Function type
-	luaL_argcheck (L, LLVMGetTypeKind (ty) == LLVMFunctionTypeKind, 1,
-			"type should be a Function type");
+	assertFunctionType (L, ty);
 
 	auto paramCount = LLVMCountParamTypes (ty);
 	auto params = new LLVMTypeRef [paramCount];
@@ -187,15 +173,122 @@ int typeGetParamTypes (lua_State *L) {
 		lua_seti (L, -2, i + 1);
 	}
 
+	delete[] params;
+
 	return 1;
 }
-//--  Other types --//
-constructBuiltinType (Void);
-constructBuiltinType (Label);
-constructBuiltinType (X86MMX);
+//--  Struct types --//
+/// Get name struct's name
+int typeGetStructName (lua_State *L) {
+	auto ty = checkType (L, 1);
+	assertStructType (L, ty);
+	
+	auto name = LLVMGetStructName (ty);
+	lua_pushstring (L, name);
+	return 1;
+}
 
 
-// LLVMContext Lua methods
+/// Set the contents of an opaque structure type
+int typeSetStructBody (lua_State *L) {
+	auto ty = checkType (L, 1);
+	assertStructType (L, ty);
+
+	unsigned elemCount;
+	// got table? If so, count params
+	if (!lua_isnoneornil (L, 2)) {
+		lua_len (L, 2);
+		elemCount = lua_tointeger (L, -1);
+		lua_pop (L, 1);
+	}
+	else {
+		elemCount = 0;
+	}
+	
+	// our element types array
+	auto elemTypes = new LLVMTypeRef [elemCount];
+	// get each type from the table, and add it to the array
+	for (unsigned i = 0; i < elemCount; i++) {
+		lua_geti (L, 2, i + 1);
+		auto ty = checkType (L, -1);
+		elemTypes[i] = ty;
+	}
+	// and pop whatever we used in this
+	lua_pop (L, elemCount);
+
+	// set struct's body
+	LLVMStructSetBody (ty, elemTypes, elemCount, lua_toboolean (L, 3));
+
+	// delete the auxiliary array, pliz
+	delete[] elemTypes;
+
+	return 0;
+}
+
+
+/// Get Struct element count
+int typeCountElements (lua_State *L) {
+	auto ty = checkType (L, -1);
+	assertStructType (L, ty);
+
+	auto count = LLVMCountStructElementTypes (ty);
+	lua_pushinteger (L, count);
+	return 1;
+}
+
+
+/// Get Struct element types in a table
+int typeGetElementTypes (lua_State *L) {
+	auto ty = checkType (L, 1);
+	assertStructType (L, ty);
+
+	auto elemCount = LLVMCountStructElementTypes (ty);
+	auto elems = new LLVMTypeRef [elemCount];
+	LLVMGetStructElementTypes (ty, elems);
+
+	lua_newtable (L);
+	for (unsigned i = 0; i < elemCount; i++) {
+		pushType (L, elems[i]);
+		lua_seti (L, -2, i + 1);
+	}
+
+	delete[] elems;
+
+	return 1;
+}
+
+
+/// Get the type of the element at a given index in the structure
+int typeGetTypeAtIndex (lua_State *L) {
+	auto ty = checkType (L, 1);
+	assertStructType (L, ty);
+
+	auto idx = luaL_checkinteger (L, 2);
+	auto typeAtIndex = LLVMStructGetTypeAtIndex (ty, idx - 1);
+	pushType (L, typeAtIndex);
+	return 1;
+}
+
+
+/// Is Struct packed?
+int typeIsPacked (lua_State *L) {
+	auto ty = checkType (L, 1);
+	assertStructType (L, ty);
+	lua_pushboolean (L, LLVMIsPackedStruct (ty));
+	return 1;
+}
+
+
+/// Is Struct opaque?
+int typeIsOpaque (lua_State *L) {
+	auto ty = checkType (L, 1);
+	assertStructType (L, ty);
+	lua_pushboolean (L, LLVMIsOpaqueStruct (ty));
+	return 1;
+}
+
+
+// LLVMType Lua methods
 const struct luaL_Reg lib[] {
 	{ "getKind", typeGetKind },
 	{ "isSized", typeIsSized },
@@ -203,31 +296,21 @@ const struct luaL_Reg lib[] {
 	{ "dump", typeDump },
 	{ "__tostring", typeToString },
 	// ints
-	{ "getInt1", getInt1Type },
-	{ "getInt8", getInt8Type },
-	{ "getInt16", getInt16Type },
-	{ "getInt32", getInt32Type },
-	{ "getInt64", getInt64Type },
-	{ "getInt128", getInt128Type },
-	{ "getInt", getIntType },
 	{ "getIntWidth", typeGetIntWidth },
-	// floats
-	{ "getHalf", getHalfType },
-	{ "getFloat", getFloatType },
-	{ "getDouble", getDoubleType },
-	{ "getX86FP80", getX86FP80Type },
-	{ "getFP128", getFP128Type },
-	{ "getPPCFP128", getPPCFP128Type },
 	// functions
 	{ "Function", typeFunction },
 	{ "isVarArg", typeIsFunctionVarArg },
 	{ "getReturn", typeGetReturn },
-	{ "__len", typeCountParam },
+	{ "countParams", typeCountParam },
 	{ "getParamTypes", typeGetParamTypes },
-	// other
-	{ "getVoid", getVoidType },
-	{ "getLabel", getLabelType },
-	{ "getX86MMX", getX86MMXType },
+	// structs
+	{ "getName", typeGetStructName },
+	{ "setBody", typeSetStructBody },
+	{ "countElements", typeCountElements },
+	{ "getElementTypes", typeGetElementTypes },
+	{ "getTypeAtIndex", typeGetTypeAtIndex },
+	{ "isPacked", typeIsPacked },
+	{ "isOpaque", typeIsOpaque },
 	{ NULL, NULL }
 };
 extern "C" {

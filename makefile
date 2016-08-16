@@ -14,6 +14,7 @@ CONFDIR = $(PREFIX)/etc
 export buildDir := $(CURDIR)/build
 export libDir := $(buildDir)/$(pkgName)
 export includeDir := $(CURDIR)/include
+export modules := core
 
 srcdir = src
 permissions = 644
@@ -23,11 +24,10 @@ permissions = 644
 all : buildDir lualvm
 
 buildDir :
-	@mkdir -p $(buildDir)
-	@mkdir -p $(libDir)
+	@mkdir -p $(addprefix $(libDir)/,$(modules))
 
 lualvm :
-	$(MAKE) -C $(srcdir)
+	$(MAKE) -C $(srcdir) all
 
 
 install :

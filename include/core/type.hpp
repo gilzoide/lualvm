@@ -17,17 +17,35 @@
  * Any bugs should be reported to <gilzoide@gmail.com>
  */
 
-/** @file core.hpp
- * Core module initialization
+/** @file core/type.hpp
+ * LLVMType bindings, for internal lualvm use only
  */
 #pragma once
 
-#include "lualvm.hpp"
+/// Lua LLVMType metatable
+#define TYPE_METATABLE "LLVMType"
 
-#include <llvm-c/Core.h>
+/** Get a LLVMTypeRef from Lua stack    [-0, +0, e]
+ *
+ * @param L Lua state
+ * @param i Index of udata
+ *
+ * @return LLVM Type
+ *
+ * @throw If value is not a LLVMType
+ */
+#define checkType(L, i) \
+	lualvm_check<LLVMTypeRef> (L, i, TYPE_METATABLE)
+
+/** Push a LLVMTypeRef into the Lua stack (as light userdata)   [-0, +1, -]
+ *
+ * @param L Lua state
+ * @param ty LLVM Type to be pushed
+ */
+#define pushType(L, ty) \
+	lualvm_push<LLVMTypeRef> (L, ty, TYPE_METATABLE)
 
 extern "C" {
-	/// Open sesa... , I mean, LLVM-C Core!
-	int luaopen_lualvm_core (lua_State *L);
+	/// Open core.type
+	int luaopen_lualvm_core_type (lua_State *L);
 }
-
