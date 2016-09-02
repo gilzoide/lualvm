@@ -39,23 +39,22 @@ function dump (ty) end
 -- @treturn string Type representation
 function __tostring (ty) end
 
+--- Get type's length, available for the following only.
+--
+-- * Integer: `LLVMGetIntTypeWidth (ty)` - Integer bit width
+-- * Function: `LLVMCountParamTypes (ty)` - Function parameter count
+-- * Struct: `LLVMCountStructElementTypes (ty)` - Struct element count
+-- * Array: `LLVMGetArrayLength (ty)` - Array length
+-- * Vector: `LLVMGetVectorSize (ty)` - Vector size
+--
+-- @Type ty Type
+--
+-- @treturn[0] int Type length
+-- @treturn[1] nil When type length doesn't fit
+function __len (ty) end
 
 --------------------------------------------------------------------------------
--- Integer types methods
--- @section Integer
-
---- Get int bitwidth (number of bits).
---
--- If type is not an integer type, returns 0
---
--- @treturn int Number of bits in the int type
---
--- @raise If type ain't an Integer type
-function getIntWidth (ty) end
-
-
---------------------------------------------------------------------------------
--- Function types methods
+-- Function types
 -- @section Function
 
 --- Get a function type consisting of the specified signature
@@ -85,15 +84,6 @@ function isVarArg (ty) end
 -- @raise If type ain't a Function type
 function getReturn (ty) end
 
---- Get function's parameter count
---
--- @Type ty Type
---
--- @treturn int Number of parameters
---
--- @raise If type ain't a Function type
-function countParams (ty) end
-
 --- Get a table with the function's parameter types
 --
 -- @Type ty Type
@@ -105,7 +95,7 @@ function getParamTypes (ty) end
 
 
 --------------------------------------------------------------------------------
--- Struct types methods
+-- Struct types
 -- @section Struct
 
 --- Get Struct's name
@@ -126,15 +116,6 @@ function getName (ty) end
 --
 -- @raise If type ain't a Struct type
 function setBody (ty, elemTypes, packed) end
-
---- Get Struct's element count
---
--- @Type ty Type
---
--- @treturn integer Element count
---
--- @raise If type ain't a Struct type
-function countElements (ty) end
 
 --- Get a table with Struct's element types
 --
@@ -175,3 +156,43 @@ function isPacked (ty) end
 --
 -- @raise If type ain't a Struct type
 function isOpaque (ty) end
+
+
+--------------------------------------------------------------------------------
+-- Sequential types
+-- @section Sequential
+
+--- Obtain the type of elements within a sequential type
+--
+-- @Type ty Type
+--
+-- @treturn LLVMType Type of the underlying elements of type `ty`
+--
+-- @raise If type ain't a Sequential type (Array, Pointer, Vector)
+function getUnderlyingType (ty) end
+
+
+--------------------------------------------------------------------------------
+-- Array types
+-- @section Array
+
+--- Create a fixed size array type that refers to a specific type
+--
+-- @Type ty Underlying elements' type
+-- @int elementCount Number of elements in Array
+--
+-- @treturn LLVMType Array type
+function Array (ty, elementCount) end
+
+
+--------------------------------------------------------------------------------
+-- Pointer types
+-- @section Pointer
+
+--- Create a pointer type that points to a defined type
+--
+-- @Type underlyingType The underlying elements' type
+-- @int[opt=0] addressSpace Address space for pointer
+--
+-- @treturn LLVMType Pointer type
+function Pointer (underlyingType, addressSpace) end

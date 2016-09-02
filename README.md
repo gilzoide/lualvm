@@ -1,12 +1,21 @@
 lualvm
 ======
-Lua wrapper for the LLVM-C API
+Lua wrapper for the LLVM-C API. It uses [SWIG](http://swig.org/) for bindings,
+and then making wrappings around that more Lua friendly.
+
+
+What works
+----------
+For now, only bindings for the LLVM-C Core is there, as wrappings will be added
+further. We don't want bindings only, but you can add the header files in the
+[SWIG interface](src/llvm.i) if you want.
 
 
 Dependencies
 ------------
 - [lua](http://www.lua.org/) >= 5.2
 - [LLVM](http://llvm.org/) version 3.8
+- [SWIG](http://swig.org/) (for building)
 
 
 Building
@@ -31,9 +40,5 @@ Using [make](https://www.gnu.org/software/make/) directly:
 
 Documentation
 -------------
-Inner code documented [doxygen](https://www.stack.nl/~dimitri/doxygen/) style,
-generate it with `doxygen`
-
-Lua API (the one you'll probably use) documented using
-[ldoc](https://github.com/stevedonovan/LDoc), `cd ldoc` and generate docs with
-`ldoc .`
+Lua API documented using [ldoc](https://github.com/stevedonovan/LDoc), `cd
+ldoc` and generate docs with `ldoc .`

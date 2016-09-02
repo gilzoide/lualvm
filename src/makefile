@@ -1,25 +1,31 @@
 ## LuaLVM C++ stuff Makefile ##
 
-# C++ stuff
-src = $(wildcard *.cpp) $(foreach m, $(modules), $(wildcard $m/*.cpp))
-objs = $(src:.cpp=.so)
+# SWIG + C++ stuff
+interfaceSrc = llvm.i
+cppSrc = $(buildDir)/llvm.cpp
+sharedObj = $(libDir)/llvm.so
+llvmIncludes = $(shell llvm-config --includedir)
 llvmFlags = $(shell llvm-config --cxxflags)
 llvmLinks = $(shell llvm-config --system-libs --libs)
 
 CXX = clang++
-CXXFLAGS = -Wall -O2 -I$(includeDir) $(llvmFlags)
+CXXFLAGS = -Wall -O2 $(llvmFlags)
 LINKS = $(llvmLinks)
 
 # Lua stuff
 luaSrc = $(wildcard *.lua)
 
 # Build #
-all : $(objs) lua
+all : interface shared lua
 
 
 # and each submodule in it's module's dir
-%.so : %.o
-	$(CXX) -o $(libDir)/$@ $< -shared $(CXXFLAGS) $(LINKS)
+interface : $(interfaceSrc)
+	swig -I$(llvmIncludes) -o $(cppSrc) -lua $<
+	sed -i 's/"LLVM/"/' $(cppSrc)
+
+shared : $(cppSrc)
+	$(CXX) -o $(sharedObj) $< -shared $(CXXFLAGS) $(LINKS)
 
 %.o : %.cpp
 	$(CXX) -o $@ -c $< $(CXXFLAGS)
