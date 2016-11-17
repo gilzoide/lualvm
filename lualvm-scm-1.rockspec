@@ -6,9 +6,10 @@ source = {
 description = {
 	summary = 'Lua wrapper for the LLVM-C API',
 	detailed = [[
-		LuaLVM is a Lua wrapper around the LLVM-C API, using LLVM version 3.8
-	]],
-	license = 'GPLv3',
+LuaLVM is a Lua wrapper around the LLVM-C API, tested on LLVM 3.9 (should work
+with other versions)
+]],
+	license = 'LGPLv3',
 	maintainer = 'gilzoide <gilzoide@gmail.com>'
 }
 dependencies = {
@@ -20,21 +21,8 @@ external_dependencies = {
 	}
 }
 build = {
-	type = 'make',
-	makefile = 'makefile',
-	build_variables = {
-		CFLAGS = '$(CFLAGS)',
-		LIBFLAG = '$(LIBFLAG)',
-		LUA_LIBDIR = '$(LUA_LIBDIR)',
-		LUA_BINDIR = '$(LUA_BINDIR)',
-		LUA_INCDIR = '$(LUA_INCDIR)',
-		LUA = '$(LUA)',
-	},
-	install_variables = {
-		PREFIX = '$(PREFIX)',
-		BINDIR = '$(BINDIR)',
-		LIBDIR = '$(LIBDIR)',
-		LUADIR = '$(LUADIR)',
-		CONFDIR = '$(CONFDIR)',
+	type = 'cmake',
+	variables = {
+		CMAKE_INSTALL_PREFIX = '/usr',
 	},
 }
