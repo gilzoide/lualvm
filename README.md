@@ -1,8 +1,8 @@
 lualvm
 ======
 Lua wrapper for the [LLVM-C](http://www.llvm.org/docs/doxygen/html/group__LLVMC.html)
-API. It uses [SWIG](http://swig.org/) for bindings, and then making wrappings
-around that more Lua friendly.
+API. It uses [inclua](https://github.com/gilzoide/inclua) for generating
+bindings, and then making wrappings around that more Lua friendly.
 
 
 What works
@@ -15,7 +15,7 @@ Dependencies
 ------------
 - [lua](http://www.lua.org/) >= 5.2
 - [LLVM](http://llvm.org/)
-- [SWIG](http://swig.org/) (for building)
+- [inclua](https://github.com/gilzoide/inclua) (for building)
 - [CMake](https://cmake.org/) >= 2.8 (for building)
 
 

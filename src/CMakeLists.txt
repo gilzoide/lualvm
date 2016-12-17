@@ -1,14 +1,11 @@
 # make SWIG find the headers
-set (CMAKE_SWIG_FLAGS -I${LLVM_INCLUDE_DIRS})
-set (CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_PROJECT_NAME})
-# make SWIG use the same type runtime for all modules
-set (CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -DSWIG_TYPE_TABLE=${CMAKE_PROJECT_NAME}")
+set (INCLUA_OUTPUT_DIRECTORY ${CMAKE_PROJECT_NAME})
 
 # General modules
 set (modules core)
 foreach (mod ${modules})
-	swig_add_module (${mod} lua ${mod}.i)
-	swig_link_libraries (${mod} ${LLVM_LIBRARIES})
+	inclua_add_module (${mod} lua ${mod}.yml -I${LLVM_INCLUDE_DIRS})
+	inclua_link_libraries (${mod} ${LLVM_LIBRARIES})
 endforeach (mod)
 
 # Copy Lua files

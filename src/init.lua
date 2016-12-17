@@ -22,30 +22,4 @@
 -- Start off with Core
 local llvm = require 'lualvm.core'
 
---- Wrapper for LLVMGetMDKindIDInContext, supplying string length automaticaly
-function llvm.GetMDKindIDInContext (C, Name)
-	return llvm._GetMDKindIDInContext (C, Name, #Name)
-end
-
---- Wrapper for LLVMGetMDKindID, supplying string length automaticaly
-function llvm.GetMDKindID (Name)
-	return llvm._GetMDKindID (Name, #Name)
-end
-
---- Wrapper for LLVMGetNamedMetadataOperands, with 'Lua table -> C array' conversion
-function llvm.GetNamedMetadataOperands (M, name)
-    local numOperands = llvm.GetNamedMetadataNumOperands (M, name)
-    local ret = {}
-    -- avoid unnecessary operations if 'numOperands == 0'
-    if numOperands > 0 then
-        local arr = llvm.new_LLVMValueRef (numOperands)
-        llvm._GetNamedMetadataOperands (M, name, arr)
-        for i = 0, numOperands - 1 do
-            table.insert (ret, llvm.LLVMValueRef_getitem (arr, i))
-        end
-        llvm.delete_LLVMValueRef (arr)
-    end
-    return ret
-end
-
 return llvm
