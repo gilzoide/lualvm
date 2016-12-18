@@ -16,16 +16,15 @@
 -- along with Lualvm.  If not, see <http://www.gnu.org/licenses/>.
 --]]
 
---- @module lualvm
--- LuaLVM module, with bindings for LLVM stuff
+--- @submodule context
+-- LLVMContext methods
 
--- Start off with pure C bindings
-local llvm = require 'lualvm.llvm'
+local ll = require 'lualvm.llvm'
 
--- and change the needed struct metatables
-require 'lualvm.context'
-require 'lualvm.module'
-require 'lualvm.type'
-require 'lualvm.value'
+local Context = ll.LLVMContext
+Context.Dispose = ll.ContextDispose
+Context.GetMDKindID = ll.GetMDKindIDInContext
+function Context:Module (name)
+	return ll.ModuleCreateWithNameInContext (self, name)
+end
 
-return llvm

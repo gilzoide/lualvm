@@ -14,15 +14,8 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with Lualvm.  If not, see <http://www.gnu.org/licenses/>.
 
-module : lualvm_core
-
 headers :
-  - /usr/include/llvm-c/Types.h
-  - /usr/include/llvm-c/Core.h
-
-rename_regex :
-  '^struct LLVMOpaque' : 'LLVM' # structs
-  '^LLVM' : '' # function prefix
+  - llvm-c/Core.h
 
 ignore : # functions with function pointer as arguments
   - LLVMContextSetYieldCallback
@@ -30,8 +23,10 @@ ignore : # functions with function pointer as arguments
   - LLVMContextGetDiagnosticHandler
   - LLVMContextGetDiagnosticContext
 
+include :
+  - irbuilder.yml
 
----
+--- # --------------------------------------------------------------------------
 
 # Contexts
 LLVMGetMDKindID : ['array[arg2] in', 'size in']
@@ -39,6 +34,7 @@ LLVMGetMDKindIDInContext : ['in', 'array[arg3] in', 'size']
 
 # Modules
 LLVMPrintModuleToFile : ['in', 'in', 'out free[LLVMDisposeMessage]']
+LLVMGetNamedMetadataOperands: ['in', 'in', 'array[LLVMGetNamedMetadataNumOperands (arg1, arg2)] out']
 
 # Types
 LLVMFunctionType : ['in', 'array[arg3] in', 'size', 'in']
@@ -69,12 +65,34 @@ LLVMConstVector : ['array[arg2] in', 'size']
 LLVMConstGEP : ['in', 'array[arg3] in', 'size']
 LLVMConstInBoundsGEP : ['in', 'array[arg3] in', 'size']
 LLVMConstExtractValue : ['in', 'array[arg3] in', 'size']
+LLVMConstInsertValue : ['in', 'in', 'array[arg4] in', 'size']
+# Values: Function Constants: Function Parameters
+LLVMGetParams : ['in', 'array[LLVMCountParams (arg1)] out']
 
+# Metadata
+LLVMMDStringInContext : ['in', 'array[arg3] in', 'size']
+LLVMMDString : ['array[arg2] in', 'size']
+LLVMMDNodeInContext : ['in', 'array[arg3] in', 'size']
+LLVMMDNode : ['array[arg2] in', 'size']
+LLVMGetMDString : ['in', 'size out', 'array[arg2] out']
+LLVMGetMDNodeOperands : ['in', 'array[LLVMGetMDNodeNumOperands (arg1)] out']
+
+# Basic Block
+LLVMGetBasicBlocks : ['in', 'array[LLVMCountBasicBlocks (arg1)] out']
+
+# Instructions: PHI nodes
+LLVMAddIncoming : ['in', 'array[arg4] in', 'array[arg4] in', 'size']
+
+
+
+
+# Memory Buffer
+LLVMCreateMemoryBufferWithContentsOfFile : ['in', 'in', 'out']
+LLVMCreateMemoryBufferWithSTDIN : ['in', 'out']
+
+## sei lá de onde vêm
 LLVMGetModuleIdentifier : ['in', 'size out', 'array[arg2] out']
 
 # Instructions
 LLVMGetIndices : ['in', 'array[LLVMGetNumIndices (arg1)] out']
 
-# Memory Buffer
-LLVMCreateMemoryBufferWithContentsOfFile : ['in', 'in', 'out']
-LLVMCreateMemoryBufferWithSTDIN : ['in', 'out']
