@@ -2,6 +2,8 @@
 set (INCLUA_OUTPUT_DIRECTORY ${CMAKE_PROJECT_NAME})
 set (INCLUA_INCLUDE_DIRECTORIES ${LLVM_INCLUDE_DIRS})
 
+set (CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -g")
+
 # LLVM bindings (for now, only core)
 inclua_add_module (llvm lua llvm.yml)
 inclua_link_libraries (llvm ${LLVM_LIBRARIES})

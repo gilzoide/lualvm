@@ -20,39 +20,101 @@
 -- LLVMValue methods
 
 local ll = require 'lualvm.llvm'
+local bind = require 'lualvm.bind'
 
 local Value = ll.LLVMValue
-Value.TypeOf = ll.TypeOf
-Value.GetName = ll.GetValueName
-Value.SetName = ll.SetValueName
-Value.Dump = ll.DumpValue
-Value.__tostring = ll.PrintValueToString
-Value.ReplaceAllUsesWith = ll.ReplaceAllUsesWith
-Value.IsConstant = ll.IsConstant
-Value.IsUndef = ll.IsUndef
-Value.IsAMDNode = ll.IsAMDNode
-Value.IsAMDString = ll.IsAMDString
-Value.GetFirstUse = ll.GetFirstUse
+bind (Value, 'TypeOf')
+bind (Value, 'GetValueName', 'GetName')
+bind (Value, 'SetValueName', 'SetName')
+bind (Value, 'DumpValue', 'Dump')
+bind (Value, 'PrintValueToString', '__tostring')
+bind (Value, 'ReplaceAllUsesWith')
+bind (Value, 'IsConstant')
+bind (Value, 'IsUndef')
+bind (Value, 'IsAMDNode')
+bind (Value, 'IsAMDString')
+bind (Value, 'GetFirstUse')
 
 local Use = ll.LLVMUse
-Use.GetNextUse = ll.GetNextUse
-Use.GetUser = ll.GetUser
-Use.GetUsedValue = ll.GetUsedValue
+bind (Use, 'GetNextUse')
+bind (Use, 'GetUser')
+bind (Use, 'GetUsedValue')
 
-local function use_iterator (val)
-	local it = val:GetFirstUse ()
-	repeat
-		coroutine.yield (it:GetUser (), it:GetUsedValue ())
-		it = it:GetNextUse ()
-	until not it
-end
+--- Iterate over LLVMValue's Uses
+--
+-- @return Value uses iterator
+bind.iterator (Value, 'Uses', 'Use')
 
---- Iterate over LLVMValue's Uses, yielding { User, UsedValue }
-function Value:Uses ()
-	return coroutine.wrap (use_iterator), self
-end
+bind (Value, 'GetOperand')
+bind (Value, 'GetOperandUse')
+bind (Value, 'SetOperand')
 
-Value.GetOperand = ll.GetOperand
-Value.GetOperandUse = ll.GetOperandUse
-Value.SetOperand = ll.SetOperand
--- TODO: terminar Values/Constants
+-- Constants
+bind (Value, 'IsNull')
+bind (Value, 'GetConstOpcode')
+bind (Value, 'GetGlobalParent')
+bind (Value, 'IsDeclaration')
+bind (Value, 'GetLinkage')
+bind (Value, 'SetLinkage')
+bind (Value, 'GetSection')
+bind (Value, 'SetSection')
+bind (Value, 'GetVisibility')
+bind (Value, 'SetVisibility')
+bind (Value, 'GetDLLStorageClass')
+bind (Value, 'SetDLLStorageClass')
+bind (Value, 'HasUnnamedAddr')
+bind (Value, 'SetUnnamedAddr')
+bind (Value, 'GetAlignment')
+bind (Value, 'SetAlignment')
+
+-- Global Variables
+bind (Value, 'GetNextGlobal')
+bind (Value, 'GetPreviousGlobal')
+bind (Value, 'GetInitializer')
+bind (Value, 'SetInitializer')
+bind (Value, 'IsThreadLocal')
+bind (Value, 'SetThreadLocal')
+bind (Value, 'IsGlobalConstant')
+bind (Value, 'SetGlobalConstant')
+bind (Value, 'GetThreadLocalMode')
+bind (Value, 'SetThreadLocalMode')
+bind (Value, 'IsExternallyInitialized')
+bind (Value, 'SetExternallyInitialized')
+
+-- Constant Function Values
+bind (Value, 'GetPersonalityFn')
+bind (Value, 'SetPersonalityFn')
+bind (Value, 'GetIntrinsicID')
+bind (Value, 'GetFunctionCallConv')
+bind (Value, 'SetFunctionCallConv')
+bind (Value, 'GetGC')
+bind (Value, 'SetGC')
+bind (Value, 'AddFunctionAttr')
+bind (Value, 'AddTargetDependentFunctionAttr')
+bind (Value, 'GetFunctionAttr')
+bind (Value, 'RemoveFunctionAttr')
+-- Constant Function Values / Function Parameters
+bind (Value, 'CountParams')
+bind (Value, 'GetParams')
+bind (Value, 'GetParam')
+bind (Value, 'GetParamParent')
+bind (Value, 'GetFirstParam')
+bind (Value, 'GetLastParam')
+bind (Value, 'GetNextParam')
+bind (Value, 'GetPreviousParam')
+bind (Value, 'AddAttribute')
+bind (Value, 'RemoveAttribute')
+bind (Value, 'GetAttribute')
+bind (Value, 'SetParamAlignment')
+
+--- Iterate over (LLVMValue) Function's Parameters
+--
+-- @param reversed Should the iteration be reversed?
+--
+-- @return Function parameters iterator
+bind.iterator_with_reverse (Value, 'Params', 'Param')
+
+-- Metadata
+bind (Value, 'GetMDString')
+bind (Value, 'GetMDNodeNumOperands')
+bind (Value, 'GetMDNodeOperands')

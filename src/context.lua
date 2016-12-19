@@ -20,11 +20,44 @@
 -- LLVMContext methods
 
 local ll = require 'lualvm.llvm'
+local bind = require 'lualvm.bind'
 
 local Context = ll.LLVMContext
-Context.Dispose = ll.ContextDispose
-Context.GetMDKindID = ll.GetMDKindIDInContext
+bind (Context, 'ContextDispose', 'Dispose')
+bind (Context, 'GetMDKindIDInContext', 'GetMDKindID')
+
+--- Create a LLVMModule on Context
 function Context:Module (name)
 	return ll.ModuleCreateWithNameInContext (self, name)
 end
 
+-- Types
+bind (Context, 'Int1TypeInContext', 'Int1Type')
+bind (Context, 'Int8TypeInContext', 'Int8Type')
+bind (Context, 'Int16TypeInContext', 'Int16Type')
+bind (Context, 'Int32TypeInContext', 'Int32Type')
+bind (Context, 'Int64TypeInContext', 'Int64Type')
+bind (Context, 'Int128TypeInContext', 'Int128Type')
+bind (Context, 'IntTypeInContext', 'IntType')
+
+bind (Context, 'HalfTypeInContext', 'HalfType')
+bind (Context, 'FloatTypeInContext', 'FloatType')
+bind (Context, 'DoubleTypeInContext', 'DoubleType')
+bind (Context, 'X86FP80TypeInContext', 'X86FP80Type')
+bind (Context, 'FP128TypeInContext', 'FP128Type')
+bind (Context, 'PPCFP128TypeInContext', 'PPCFP128Type')
+
+bind (Context, 'StructTypeInContext', 'StructType')
+bind (Context, 'StructCreateNamed', 'NamedStruct')
+
+bind (Context, 'VoidTypeInContext', 'VoidType')
+bind (Context, 'LabelTypeInContext', 'LabelType')
+bind (Context, 'X86MMXTypeInContext', 'X86MMXType')
+
+-- Constants
+bind (Context, 'ConstStringInContext', 'ConstString')
+bind (Context, 'ConstStructInContext', 'ConstStruct')
+
+-- Metadata
+bind (Context, 'MDStringInContext', 'MDString')
+bind (Context, 'MDNodeInContext', 'MDNode')

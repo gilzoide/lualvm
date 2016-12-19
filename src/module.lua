@@ -20,6 +20,7 @@
 -- LLVMModule methods
 
 local ll = require 'lualvm.llvm'
+local bind = require 'lualvm.bind'
 
 local Module = ll.LLVMModule
 
@@ -28,46 +29,45 @@ function Module.Create (name)
 	return ll.ModuleCreateWithName (name)
 end
 
-Module.Clone = ll.CloneModule
-Module.Dispose = ll.DisposeModule
-Module.GetDataLayout = ll.GetDataLayout
-Module.SetDataLayout = ll.SetDataLayout
-Module.GetTarget = ll.GetTarget
-Module.SetTarget = ll.SetTarget
-Module.Dump = ll.DumpModule
-Module.PrintToFile = ll.PrintModuleToFile
-Module.SetInlineAsm = ll.SetModuleInlineAsm
-Module.GetContext = ll.GetModuleContext
-Module.GetTypeByName = ll.GetTypeByName
-Module.GetNamedMetadataOperands = ll.GetNamedMetadataOperands
-Module.AddNamedMetadataOperand = ll.AddNamedMetadataOperand
-Module.AddFunction = ll.AddFunction
-Module.GetNamedFunction = ll.GetNamedFunction
-Module.__tostring = ll.PrintModuleToString
-Module.GetFirstFunction = ll.GetFirstFunction
-Module.GetLastFunction = ll.GetLastFunction
+bind (Module, 'CloneModule', 'Clone')
+bind (Module, 'DisposeModule', 'Dispose')
+bind (Module, 'GetDataLayout')
+bind (Module, 'SetDataLayout')
+bind (Module, 'GetTarget')
+bind (Module, 'SetTarget')
+bind (Module, 'DumpModule', 'Dump')
+bind (Module, 'PrintModuleToFile', 'PrintToFile')
+bind (Module, 'SetModuleInlineAsm', 'SetInlineAsm')
+bind (Module, 'GetModuleContext', 'GetContext')
+bind (Module, 'GetTypeByName')
+bind (Module, 'GetNamedMetadataOperands')
+bind (Module, 'AddNamedMetadataOperand')
+bind (Module, 'AddFunction')
+bind (Module, 'GetNamedFunction')
+bind (Module, 'PrintModuleToString', '__tostring')
+bind (Module, 'GetFirstFunction')
+bind (Module, 'GetLastFunction')
 
-local function function_iterator (mod)
-	local it = mod:GetFirstFunction ()
-	repeat
-		coroutine.yield (it)
-		it = ll.GetNextFunction (it)
-	until not it
-end
-local function reverse_function_iterator (mod)
-	local it = mod:GetLastFunction ()
-	repeat
-		coroutine.yield (it)
-		it = ll.GetPreviousFunction (it)
-	until not it
-end
 --- Iterate over LLVMModule's functions
 --
 -- @param reversed Should the iteration be reversed?
 --
 -- @return Function iterator
-function Module:Functions (reversed)
-	return coroutine.wrap (reversed and reverse_function_iterator or function_iterator)
-			, self
-end
+bind.iterator_with_reverse (Module, 'Functions', 'Function')
 
+-- Constant Global Variables
+bind (Module, 'AddGlobal')
+bind (Module, 'AddGlobalInAddressSpace')
+bind (Module, 'GetNamedGlobal', 'GetGlobal')
+bind (Module, 'GetFirstGlobal')
+bind (Module, 'GetLastGlobal')
+
+--- Iterate over LLVMModule's global variables
+--
+-- @param reversed Should the iteration be reversed?
+--
+-- @return Global variables iterator
+bind.iterator_with_reverse (Module, 'Globals', 'Global')
+
+-- Constant Global Aliases
+bind (Module, 'AddAlias')

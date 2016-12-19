@@ -18,7 +18,7 @@
 // Trick the compiler into treating every LLVMBool as bool, making Lua use
 // boolean values (true and false), as it should
 
-// Gambiarra, you say? Nah...
+// Gambiarra, you say? Nah... What could possibly go wrong?
 
 #include <llvm-c/Types.h>
 
