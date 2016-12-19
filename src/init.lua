@@ -23,11 +23,14 @@
 local llvm = require 'lualvm.llvm'
 
 -- and change the needed struct metatables
-require 'lualvm.context'
-require 'lualvm.module'
-require 'lualvm.type'
-require 'lualvm.value'
-require 'lualvm.memory_buffer'
-require 'lualvm.execution_engine'
+require 'lualvm.Context'
+require 'lualvm.Module'
+require 'lualvm.Type'
+require 'lualvm.Value'
+require 'lualvm.BasicBlock'
+require 'lualvm.MemoryBuffer'
+require 'lualvm.ExecutionEngine'
+require 'lualvm.TargetData'
+require 'lualvm.TargetMachine'
 
 return llvm

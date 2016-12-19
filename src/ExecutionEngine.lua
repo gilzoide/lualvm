@@ -16,7 +16,7 @@
 -- along with Lualvm.  If not, see <http://www.gnu.org/licenses/>.
 --]]
 
---- @submodule execution_engine
+--- @submodule ExecutionEngine
 -- LLVMExecutionEngine methods
 
 local ll = require 'lualvm.llvm'

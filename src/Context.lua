@@ -16,7 +16,7 @@
 -- along with Lualvm.  If not, see <http://www.gnu.org/licenses/>.
 --]]
 
---- @submodule context
+--- @submodule Context
 -- LLVMContext methods
 
 local ll = require 'lualvm.llvm'
@@ -25,11 +25,7 @@ local bind = require 'lualvm.bind'
 local Context = ll.LLVMContext
 bind (Context, 'ContextDispose', 'Dispose')
 bind (Context, 'GetMDKindIDInContext', 'GetMDKindID')
-
---- Create a LLVMModule on Context
-function Context:Module (name)
-	return ll.ModuleCreateWithNameInContext (self, name)
-end
+bind (Context, 'ModuleCreateWithNameInContext', 'Module')
 
 -- Types
 bind (Context, 'Int1TypeInContext', 'Int1Type')

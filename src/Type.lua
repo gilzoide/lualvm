@@ -16,7 +16,7 @@
 -- along with Lualvm.  If not, see <http://www.gnu.org/licenses/>.
 --]]
 
---- @submodule type
+--- @submodule Type
 -- LLVMType methods
 
 local ll = require 'lualvm.llvm'

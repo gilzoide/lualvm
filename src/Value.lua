@@ -16,7 +16,7 @@
 -- along with Lualvm.  If not, see <http://www.gnu.org/licenses/>.
 --]]
 
---- @submodule value
+--- @submodule Value
 -- LLVMValue methods
 
 local ll = require 'lualvm.llvm'
@@ -39,10 +39,6 @@ local Use = ll.LLVMUse
 bind (Use, 'GetNextUse')
 bind (Use, 'GetUser')
 bind (Use, 'GetUsedValue')
-
---- Iterate over LLVMValue's Uses
---
--- @return Value uses iterator
 bind.iterator (Value, 'Uses', 'Use')
 
 bind (Value, 'GetOperand')
@@ -106,15 +102,56 @@ bind (Value, 'AddAttribute')
 bind (Value, 'RemoveAttribute')
 bind (Value, 'GetAttribute')
 bind (Value, 'SetParamAlignment')
-
---- Iterate over (LLVMValue) Function's Parameters
---
--- @param reversed Should the iteration be reversed?
---
--- @return Function parameters iterator
 bind.iterator_with_reverse (Value, 'Params', 'Param')
 
 -- Metadata
 bind (Value, 'GetMDString')
 bind (Value, 'GetMDNodeNumOperands')
 bind (Value, 'GetMDNodeOperands')
+
+-- BasicBlock
+bind (Value, 'ValueIsBasicBlock', 'IsBasicBlock')
+bind (Value, 'ValueAsBasicBlock', 'AsBasicBlock')
+bind (Value, 'CountBasicBlocks')
+bind (Value, 'GetBasicBlocks')
+bind.iterator_with_reverse (Value, 'BasicBlocks', 'BasicBlock')
+bind (Value, 'GetEntryBasicBlock')
+bind (Value, 'AppendBasicBlock')
+--- LLVMAppendBasicBlockInContext using Value as first argument
+function Value:AppendBasicBlockInContext (ctx, name)
+	return ll.AppendBasicBlockInContext (ctx, self, name)
+end
+
+-- Instructions
+bind (Value, 'HasMetadata')
+bind (Value, 'GetMetadata')
+bind (Value, 'SetMetadata')
+bind (Value, 'GetInstructionParent')
+bind (Value, 'GetNextInstruction')
+bind (Value, 'GetPreviousInstruction')
+bind (Value, 'InstructionEraseFromParent')
+bind (Value, 'GetInstructionOpcode')
+bind (Value, 'GetICmpPredicate')
+bind (Value, 'GetFCmpPredicate')
+bind (Value, 'InstructionClone')
+-- Instructions / Call sites
+bind (Value, 'SetInstructionCallConv')
+bind (Value, 'GetInstructionCallConv')
+bind (Value, 'AddInstrAttribute')
+bind (Value, 'RemoveInstrAttribute')
+bind (Value, 'SetInstrParamAlignment')
+bind (Value, 'IsTailCall')
+bind (Value, 'SetTailCall')
+-- Instructions / Terminators
+bind (Value, 'GetNumSuccessors')
+bind (Value, 'GetSuccessor')
+bind (Value, 'SetSuccessor')
+bind (Value, 'IsConditional')
+bind (Value, 'GetCondition')
+bind (Value, 'SetCondition')
+bind (Value, 'GetSwitchDefaultDest')
+-- Instructions / PHI nodes
+bind (Value, 'AddIncoming')
+bind (Value, 'CountIncoming')
+bind (Value, 'GetIncomingValue')
+bind (Value, 'GetIncomingBlock')

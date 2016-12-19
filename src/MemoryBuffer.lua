@@ -16,7 +16,7 @@
 -- along with Lualvm.  If not, see <http://www.gnu.org/licenses/>.
 --]]
 
---- @submodule memory_buffer
+--- @submodule MemoryBuffer
 -- LLVMMemoryBuffer methods
 
 local ll = require 'lualvm.llvm'

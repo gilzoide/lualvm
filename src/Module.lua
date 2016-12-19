@@ -16,7 +16,7 @@
 -- along with Lualvm.  If not, see <http://www.gnu.org/licenses/>.
 --]]
 
---- @submodule context
+--- @submodule Module
 -- LLVMModule methods
 
 local ll = require 'lualvm.llvm'
@@ -24,11 +24,7 @@ local bind = require 'lualvm.bind'
 
 local Module = ll.LLVMModule
 
---- Create a LLVMModule instance from name on the global context
-function Module.Create (name)
-	return ll.ModuleCreateWithName (name)
-end
-
+bind (Module, 'ModuleCreateWithName', 'Create')
 bind (Module, 'CloneModule', 'Clone')
 bind (Module, 'DisposeModule', 'Dispose')
 bind (Module, 'GetDataLayout')
