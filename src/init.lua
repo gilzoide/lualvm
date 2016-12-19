@@ -33,5 +33,6 @@ require 'lualvm.MemoryBuffer'
 require 'lualvm.ExecutionEngine'
 require 'lualvm.TargetData'
 require 'lualvm.TargetMachine'
+require 'lualvm.PassManager'
 
 return llvm

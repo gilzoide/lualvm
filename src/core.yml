@@ -17,17 +17,23 @@
 headers :
   - llvm-c/Core.h
 
-ignore : # functions with function pointer as arguments
+ignore :
+  # Functions with function pointer as arguments
   - LLVMContextSetYieldCallback
   - LLVMContextSetDiagnosticHandler
   - LLVMContextGetDiagnosticHandler
   - LLVMContextGetDiagnosticContext
+  # Deprecated
+  - LLVMCreateFunctionPassManager
+  - LLVMGetDataLayout
+  - LLVMStartMultithreaded
+  - LLVMStopMultithreaded
 
 include :
   - irbuilder.yml
   - memory_buffer.yml
 
---- # --------------------------------------------------------------------------
+---
 
 # Contexts
 LLVMGetMDKindID : ['array[arg2] in', 'size in']

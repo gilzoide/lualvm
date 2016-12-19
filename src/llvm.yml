@@ -19,15 +19,19 @@ module : lualvm_llvm
 headers :
   - lualvm_bool.h
   - llvm-c/Types.h
+  - llvm-c/Initialization.h
+  - llvm-c/Support.h
 
 rename_regex :
   '^struct LLVMOpaque' : 'LLVM' # structs
   '^LLVM' : '' # function prefix
 
 include :
-  - core.yml
+  - analysis.yml
   - code_rw.yml
+  - core.yml
   - execution_engine.yml
   - target.yml
+  - transforms.yml
 
 ---
