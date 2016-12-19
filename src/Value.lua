@@ -155,3 +155,13 @@ bind (Value, 'AddIncoming')
 bind (Value, 'CountIncoming')
 bind (Value, 'GetIncomingValue')
 bind (Value, 'GetIncomingBlock')
+
+-- IRBuilder
+bind (Value, 'AddCase')
+bind (Value, 'AddDestination')
+bind (Value, 'AddClause')
+bind (Value, 'SetCleanup')
+bind (Value, 'GetVolatile')
+bind (Value, 'SetVolatile')
+bind (Value, 'GetOrdering')
+bind (Value, 'SetOrdering')

@@ -29,6 +29,10 @@ bind (Type, 'GetTypeContext', 'GetContext')
 bind (Type, 'DumpType', 'Dump')
 bind (Type, 'PrintTypeToString', '__tostring')
 
+bind (Type, 'ArrayType', 'Array')
+bind (Type, 'PointerType', 'Pointer')
+bind (Type, 'VectorType', 'Vector')
+
 -- Integer types method
 bind (Type, 'GetIntTypeWidth', 'GetIntWidth')
 -- Function types methods

@@ -57,3 +57,6 @@ bind (Context, 'ConstStructInContext', 'ConstStruct')
 -- Metadata
 bind (Context, 'MDStringInContext', 'MDString')
 bind (Context, 'MDNodeInContext', 'MDNode')
+
+-- IRBuilder
+bind (Context, 'CreateBuilderInContext', 'Builder')
