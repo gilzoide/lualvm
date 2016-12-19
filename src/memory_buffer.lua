@@ -16,18 +16,13 @@
 -- along with Lualvm.  If not, see <http://www.gnu.org/licenses/>.
 --]]
 
---- @module lualvm
--- LuaLVM module, with bindings for LLVM stuff
+--- @submodule memory_buffer
+-- LLVMMemoryBuffer methods
 
--- Start off with pure C bindings
-local llvm = require 'lualvm.llvm'
+local ll = require 'lualvm.llvm'
+local bind = require 'lualvm.bind'
 
--- and change the needed struct metatables
-require 'lualvm.context'
-require 'lualvm.module'
-require 'lualvm.type'
-require 'lualvm.value'
-require 'lualvm.memory_buffer'
-require 'lualvm.execution_engine'
-
-return llvm
+local MemoryBuffer = ll.LLVMMemoryBuffer
+bind (MemoryBuffer, 'GetBufferStart', 'GetStart')
+bind (MemoryBuffer, 'GetBufferSize', '__len')
+bind (MemoryBuffer, 'DisposeMemoryBuffer', 'Dispose')

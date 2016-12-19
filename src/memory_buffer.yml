@@ -14,20 +14,8 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with Lualvm.  If not, see <http://www.gnu.org/licenses/>.
 
-module : lualvm_llvm
-
-headers :
-  - lualvm_bool.h
-  - llvm-c/Types.h
-
-rename_regex :
-  '^struct LLVMOpaque' : 'LLVM' # structs
-  '^LLVM' : '' # function prefix
-
-include :
-  - core.yml
-  - code_rw.yml
-  - execution_engine.yml
-  - target.yml
-
----
+LLVMCreateMemoryBufferWithContentsOfFile : ['in', 'out', 'out']
+LLVMCreateMemoryBufferWithSTDIN : ['out', 'out']
+LLVMGetBufferStart : ['in', 'array[LLVMGetBufferSize (arg1)] out']
+LLVMCreateMemoryBufferWithMemoryRange : ['array[arg2] in', 'size', 'in', 'in']
+LLVMCreateMemoryBufferWithMemoryRangeCopy : ['array[arg2] in', 'size', 'in']

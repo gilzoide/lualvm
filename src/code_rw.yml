@@ -14,20 +14,22 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with Lualvm.  If not, see <http://www.gnu.org/licenses/>.
 
-module : lualvm_llvm
-
 headers :
-  - lualvm_bool.h
-  - llvm-c/Types.h
-
-rename_regex :
-  '^struct LLVMOpaque' : 'LLVM' # structs
-  '^LLVM' : '' # function prefix
-
-include :
-  - core.yml
-  - code_rw.yml
-  - execution_engine.yml
-  - target.yml
+  - llvm-c/IRReader.h
+  - llvm-c/BitReader.h
+  - llvm-c/BitWriter.h
 
 ---
+
+# IRReader
+LLVMParseIRInContext : ['in', 'in', 'out', 'out free[LLVMDisposeMessage]']
+
+# BitReader
+LLVMParseBitcode : ['in', 'out', 'out free[LLVMDisposeMessage]']
+LLVMParseBitcode2 : ['in', 'out']
+LLVMParseBitcodeInContext : ['in', 'in', 'out', 'out free[LLVMDisposeMessage]']
+LLVMParseBitcodeInContext2 : ['in', 'in', 'out']
+LLVMGetBitcodeModuleInContext : ['in', 'in', 'out', 'out free[LLVMDisposeMessage]']
+LLVMGetBitcodeModuleInContext2 : ['in', 'in', 'out']
+LLVMGetBitcodeModule : ['in', 'out', 'out free[LLVMDisposeMessage]']
+LLVMGetBitcodeModule2 : ['in', 'out']

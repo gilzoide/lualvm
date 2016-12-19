@@ -1,0 +1,38 @@
+# Copyright 2016 Gil Barbosa Reis <gilzoide@gmail.com>
+# This file is part of Lualvm.
+#
+# Lualvm is free software: you can redistribute it and/or modify
+# it under the terms of the GNU Lesser General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# Lualvm is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU Lesser General Public License for more details.
+#
+# You should have received a copy of the GNU Lesser General Public License
+# along with Lualvm.  If not, see <http://www.gnu.org/licenses/>.
+
+headers :
+  - llvm-c/ExecutionEngine.h
+
+ignore :
+  - LLVMCreateSimpleMCJITMemoryManager
+  - LLVMDisposeMCJITMemoryManager
+  # TODO: arrumar os templates no Lua, daí pode tirar esses trem
+  - struct LLVMMCJITCompilerOptions
+  - LLVMInitializeMCJITCompilerOptions
+  - LLVMCreateMCJITCompilerForModule
+
+---
+
+LLVMCreateExecutionEngineForModule : ['out', 'in', 'out free[LLVMDisposeMessage]']
+LLVMCreateInterpreterForModule : ['out', 'in', 'out free[LLVMDisposeMessage]']
+LLVMCreateJITCompilerForModule : ['out', 'in', 'in', 'out free[LLVMDisposeMessage]']
+LLVMInitializeMCJITCompilerOptions : ['array[arg2] in', 'size']
+LLVMCreateMCJITCompilerForModule : ['out', 'in', 'array[arg4] in', 'size', 'out free[LLVMDisposeMessage]']
+LLVMRunFunctionAsMain : ['in', 'in', 'size', 'array[arg3] in', 'array[_] in']
+LLVMRunFunction : ['in', 'in', 'size', 'array[arg3] in']
+LLVMRemoveModule : ['in', 'in', 'out', 'out free[LLVMDisposeMessage]']
+LLVMFindFunction : ['in', 'in', 'out']

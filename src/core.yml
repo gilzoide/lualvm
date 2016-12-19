@@ -25,6 +25,7 @@ ignore : # functions with function pointer as arguments
 
 include :
   - irbuilder.yml
+  - memory_buffer.yml
 
 --- # --------------------------------------------------------------------------
 
@@ -84,11 +85,6 @@ LLVMGetBasicBlocks : ['in', 'array[LLVMCountBasicBlocks (arg1)] out']
 LLVMAddIncoming : ['in', 'array[arg4] in', 'array[arg4] in', 'size']
 
 
-
-
-# Memory Buffer
-LLVMCreateMemoryBufferWithContentsOfFile : ['in', 'in', 'out']
-LLVMCreateMemoryBufferWithSTDIN : ['in', 'out']
 
 ## sei lá de onde vêm
 LLVMGetModuleIdentifier : ['in', 'size out', 'array[arg2] out']

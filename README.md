@@ -7,8 +7,9 @@ bindings, and then making wrappings around that more Lua friendly.
 
 What works
 ----------
-For now, only bindings for the LLVM-C Core is there, the other submodules, as
-well as more Lua-style API will be added further.
+For now, only bindings for the LLVM-C Core, BitReader/Writer, IRReader and
+ExecutionEngine are there. The other submodules, as well as more of the
+Lua-style API will be added further.
 
 
 Dependencies

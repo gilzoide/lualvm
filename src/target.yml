@@ -14,20 +14,17 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with Lualvm.  If not, see <http://www.gnu.org/licenses/>.
 
-module : lualvm_llvm
-
 headers :
-  - lualvm_bool.h
-  - llvm-c/Types.h
-
-rename_regex :
-  '^struct LLVMOpaque' : 'LLVM' # structs
-  '^LLVM' : '' # function prefix
-
-include :
-  - core.yml
-  - code_rw.yml
-  - execution_engine.yml
-  - target.yml
+  - llvm-c/Target.h
+  - llvm-c/TargetMachine.h
 
 ---
+
+LLVMCopyStringRepOfTargetData : ['in', 'out free[LLVMDisposeMessage]']
+LLVMGetTargetFromTriple : ['in', 'out', 'out free[LLVMDisposeMessage]']
+LLVMGetTargetMachineTriple : ['in', 'out free[LLVMDisposeMessage]']
+LLVMGetTargetMachineCPU : ['in', 'out free[LLVMDisposeMessage]']
+LLVMGetTargetMachineFeatureString : ['in', 'out free[LLVMDisposeMessage]']
+LLVMTargetMachineEmitToFile : ['in', 'in', 'in', 'in', 'out free[LLVMDisposeMessage]']
+LLVMTargetMachineEmitToMemoryBuffer : ['in', 'in', 'in', 'out free[LLVMDisposeMessage]', 'out']
+LLVMGetDefaultTargetTriple : ['out free[LLVMDisposeMessage]']
