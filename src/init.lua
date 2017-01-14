@@ -34,5 +34,9 @@ require 'lualvm.ExecutionEngine'
 require 'lualvm.TargetData'
 require 'lualvm.TargetMachine'
 require 'lualvm.PassManager'
+require 'lualvm.ObjectFile'
+
+--- Lualvm version string
+llvm.VERSION = '1.0.0'
 
 return llvm

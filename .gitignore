@@ -4,9 +4,12 @@
 
 # objects
 build/
+build.luarocks/
 *.o
 *.so
 *.dll
+*.s
+*.ll
 
 # docs
 html/

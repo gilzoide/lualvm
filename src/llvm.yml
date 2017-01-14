@@ -19,7 +19,10 @@ module : lualvm_llvm
 headers :
   - lualvm_bool.h
   - llvm-c/Types.h
+  - llvm-c/ErrorHandling.h
   - llvm-c/Initialization.h
+  - llvm-c/Linker.h
+  - llvm-c/Object.h
   - llvm-c/Support.h
 
 rename_regex :
@@ -33,5 +36,6 @@ include :
   - execution_engine.yml
   - target.yml
   - transforms.yml
+  - version.yml
 
 ---

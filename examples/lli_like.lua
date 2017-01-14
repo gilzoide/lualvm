@@ -1,3 +1,5 @@
+#!/usr/bin/env lua
+
 --- This script works like the `lli` command, using a JIT Compiler
 -- ExecutionEngine to run the ".ll" or ".bc" file given as first parameter.
 

@@ -15,8 +15,10 @@
  * along with Lualvm.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-// Trick the compiler into treating every LLVMBool as bool, making Lua use
-// boolean values (true and false), as it should
+/** @file lualvm_bool.h
+ * Trick the compiler into treating every LLVMBool as bool, making Lua use
+ * boolean values (true and false), as it should
+ */
 
 // Gambiarra, you say? Nah... What could possibly go wrong?
 

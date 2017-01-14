@@ -18,6 +18,7 @@ headers :
   - llvm-c/ExecutionEngine.h
 
 ignore :
+  # Function pointers, which when bound explode with the 'bool' trick/macro
   - LLVMCreateSimpleMCJITMemoryManager
   - LLVMDisposeMCJITMemoryManager
   # TODO: arrumar os templates no Lua, daí pode tirar esses trem
@@ -31,7 +32,7 @@ LLVMCreateExecutionEngineForModule : ['out', 'in', 'out free[LLVMDisposeMessage]
 LLVMCreateInterpreterForModule : ['out', 'in', 'out free[LLVMDisposeMessage]']
 LLVMCreateJITCompilerForModule : ['out', 'in', 'in', 'out free[LLVMDisposeMessage]']
 LLVMInitializeMCJITCompilerOptions : ['array[arg2] in', 'size']
-LLVMCreateMCJITCompilerForModule : ['out', 'in', 'array[arg4] in', 'size', 'out free[LLVMDisposeMessage]']
+LLVMCreateMCJITCompilerForModule : ['out', 'in', 'array[arg4] in', 'size', 'out free[LLVMDisposeMessage]'] # ignored for now, but it is bindable
 LLVMRunFunctionAsMain : ['in', 'in', 'size', 'array[arg3] in', 'array[_] in']
 LLVMRunFunction : ['in', 'in', 'size', 'array[arg3] in']
 LLVMRemoveModule : ['in', 'in', 'out', 'out free[LLVMDisposeMessage]']

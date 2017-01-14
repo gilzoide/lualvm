@@ -14,7 +14,17 @@ file (COPY ${luaSrc} DESTINATION ${CMAKE_PROJECT_NAME})
 
 ##  Install  ##
 set (LUA_VER "${LUA_VERSION_MAJOR}.${LUA_VERSION_MINOR}")
+
+# Variables expected from Luarocks, set if not present
+# TODO: use the right path on Windows (using Luarocks is preferred anyway, so no much worries here)
+if (NOT LIBDIR)
+	set (LIBDIR lib/lua/${LUA_VER})
+endif ()
+if (NOT LUADIR)
+	set (LUADIR share/lua/${LUA_VER})
+endif ()
+
 install (TARGETS llvm
-	LIBRARY DESTINATION lib/lua/${LUA_VER}/${CMAKE_PROJECT_NAME})
+	LIBRARY DESTINATION ${LIBDIR}/${CMAKE_PROJECT_NAME})
 install (FILES ${luaSrc}
-	DESTINATION share/lua/${LUA_VER}/${CMAKE_PROJECT_NAME})
+	DESTINATION ${LUADIR}/${CMAKE_PROJECT_NAME})

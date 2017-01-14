@@ -27,7 +27,7 @@ local Module = ll.LLVMModule
 bind (Module, 'ModuleCreateWithName', 'Create')
 bind (Module, 'CloneModule', 'Clone')
 bind (Module, 'DisposeModule', 'Dispose')
-bind (Module, 'GetDataLayout')
+bind (Module, 'GetDataLayoutStr')
 bind (Module, 'SetDataLayout')
 bind (Module, 'GetTarget')
 bind (Module, 'SetTarget')

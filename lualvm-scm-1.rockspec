@@ -23,6 +23,8 @@ external_dependencies = {
 build = {
 	type = 'cmake',
 	variables = {
-		CMAKE_INSTALL_PREFIX = '/usr',
+		CMAKE_INSTALL_PREFIX = '$(PREFIX)',
+		LUADIR = '$(LUADIR)',
+		LIBDIR = '$(LIBDIR)',
 	},
 }
