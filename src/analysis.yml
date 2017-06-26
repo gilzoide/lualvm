@@ -1,4 +1,4 @@
-# Copyright 2016 Gil Barbosa Reis <gilzoide@gmail.com>
+# Copyright 2016-2017 Gil Barbosa Reis <gilzoide@gmail.com>
 # This file is part of Lualvm.
 #
 # Lualvm is free software: you can redistribute it and/or modify
@@ -19,4 +19,4 @@ headers :
 
 ---
 
-LLVMVerifyModule : ['in', 'in', 'out free[LLVMDisposeMessage]']
+LLVMVerifyModule : ['in', 'in', 'out free = LLVMDisposeMessage']

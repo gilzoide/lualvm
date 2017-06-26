@@ -9,7 +9,7 @@ inclua_add_module (llvm lua llvm.yml)
 inclua_link_libraries (llvm ${LLVM_LIBRARIES})
 
 # Copy Lua files
-file (GLOB luaSrc *.lua)
+file (GLOB luaSrc lua/*.lua)
 file (COPY ${luaSrc} DESTINATION ${CMAKE_PROJECT_NAME})
 
 ##  Install  ##

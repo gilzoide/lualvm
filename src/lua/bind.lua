@@ -1,5 +1,5 @@
 --[[
--- Copyright 2016 Gil Barbosa Reis <gilzoide@gmail.com>
+-- Copyright 2016-2017 Gil Barbosa Reis <gilzoide@gmail.com>
 -- This file is part of Lualvm.
 --
 -- Lualvm is free software: you can redistribute it and/or modify
@@ -23,10 +23,15 @@ local ll = require 'lualvm.llvm'
 
 local bind = {}
 
---- Find `LLVMfunc_name`, raising error if not found
+--- Find `LLVMfunc_name`, raising warning if not found
 local function find_on_llvm (func_name)
-	return assert (ll[func_name], string.format (
-			"[lualvm.bind] Couldn't find '%s' function in LLVM bindings", func_name))
+	local f = ll[func_name]
+	if f == nil then
+		io.stderr:write(string.format (
+				"[lualvm.bind] Couldn't find '%s' function in LLVM bindings\n",
+				func_name))
+	end
+	return f
 end
 	
 
@@ -44,11 +49,13 @@ function bind.iterator (meta, new_name, property)
 		return coroutine.wrap (function (obj)
 			local first_func = find_on_llvm ('GetFirst' .. property)
 			local next_func = find_on_llvm ('GetNext' .. property)
-			local it = first_func (obj)
-			repeat
-				coroutine.yield (it)
-				it = next_func (it)
-			until not it
+			if first_func and next_func then
+				local it = first_func (obj)
+				repeat
+					coroutine.yield (it)
+					it = next_func (it)
+				until not it
+			end
 		end), self
 	end
 end
@@ -60,11 +67,13 @@ function bind.iterator_with_reverse (meta, new_name, property)
 		return coroutine.wrap (function (obj)
 			local first_func = reversed and find_on_llvm ('GetLast' .. property) or find_on_llvm ('GetFirst' .. property)
 			local next_func = reversed and find_on_llvm ('GetPrevious' .. property) or find_on_llvm ('GetNext' .. property)
-			local it = first_func (obj)
-			repeat
-				coroutine.yield (it)
-				it = next_func (it)
-			until not it
+			if first_func and next_func then
+				local it = first_func (obj)
+				repeat
+					coroutine.yield (it)
+					it = next_func (it)
+				until not it
+			end
 		end), self
 	end
 end
@@ -76,12 +85,14 @@ function bind.object_file_iterator (meta, new_name, property)
 			local move_iterator = find_on_llvm ('MoveToNext' .. property)
 			local check_end_func = find_on_llvm ('Is' .. property .. 'IteratorAtEnd')
 			local dispose_func = find_on_llvm ('Dispose' .. property .. 'Iterator')
-			local it = get_iterator (obj)
-			repeat
-				coroutine.yield (it)
-				move_iterator (it)
-			until check_end_func (it)
-			dispose_func (it)
+			if get_iterator and move_iterator and check_end_func and dispose_func then
+				local it = get_iterator (obj)
+				repeat
+					coroutine.yield (it)
+					move_iterator (it)
+				until check_end_func (it)
+				dispose_func (it)
+			end
 		end), self
 	end
 end

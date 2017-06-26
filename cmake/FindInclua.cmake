@@ -1,18 +1,19 @@
 #[[.rst:
-FindInclua
-==========
-
-Find inclua.
-
-Defines the following variables
-
-- INCLUA_FOUND - If inclua was found
-- INCLUA_VERSION - Inclua version
-- INCLUA_EXECUTABLE - Inclua executable path
+# FindInclua
+# ==========
+# 
+# Find inclua.
+# 
+# Defines the following variables
+# 
+# - INCLUA_FOUND - If inclua was found
+# - INCLUA_VERSION - Inclua version
+# - INCLUA_EXECUTABLE - Inclua executable path
 #]]
 
 find_program (INCLUA_EXECUTABLE NAMES inclua)
 
+# TODO use FindClang.cmake here
 if (INCLUA_EXECUTABLE)
 	# find inclua version
 	execute_process (COMMAND ${INCLUA_EXECUTABLE} -v

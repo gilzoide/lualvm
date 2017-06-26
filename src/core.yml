@@ -1,4 +1,4 @@
-# Copyright 2016 Gil Barbosa Reis <gilzoide@gmail.com>
+# Copyright 2016-2017 Gil Barbosa Reis <gilzoide@gmail.com>
 # This file is part of Lualvm.
 #
 # Lualvm is free software: you can redistribute it and/or modify
@@ -19,6 +19,7 @@ headers :
 
 ignore :
   # Functions with function pointer as arguments
+  - LLVMInstallFatalErrorHandler
   - LLVMContextSetYieldCallback
   - LLVMContextSetDiagnosticHandler
   - LLVMContextGetDiagnosticHandler
@@ -40,20 +41,20 @@ LLVMGetMDKindID : ['array[arg2] in', 'size in']
 LLVMGetMDKindIDInContext : ['in', 'array[arg3] in', 'size']
 
 # Modules
-LLVMPrintModuleToFile : ['in', 'in', 'out free[LLVMDisposeMessage]']
-LLVMGetNamedMetadataOperands: ['in', 'in', 'array[LLVMGetNamedMetadataNumOperands (arg1, arg2)] out']
+LLVMPrintModuleToFile : ['in', 'in', 'out free = LLVMDisposeMessage']
+LLVMGetNamedMetadataOperands: ['in', 'in', 'array[LLVMGetNamedMetadataNumOperands(arg1, arg2)] out']
 
 # Types
 LLVMFunctionType : ['in', 'array[arg3] in', 'size', 'in']
-LLVMGetParamTypes : ['in', 'array[LLVMCountParamTypes (arg1)] out']
+LLVMGetParamTypes : ['in', 'array[LLVMCountParamTypes(arg1)] out']
 LLVMStructTypeInContext : ['in', 'array[arg3] in', 'size', 'in']
 LLVMStructType : ['array[arg2] in', 'size', 'in']
 LLVMStructSetBody : ['in', 'array[arg3] in', 'size', 'in']
-LLVMGetStructElementTypes : ['in', 'array[LLVMCountStructElementTypes (arg1)] out']
-LLVMPrintTypeToString : ['in', 'out free[LLVMDisposeMessage]']
+LLVMGetStructElementTypes : ['in', 'array[LLVMCountStructElementTypes(arg1)] out']
+LLVMPrintTypeToString : ['in', 'out free = LLVMDisposeMessage']
 
 # Values: General
-LLVMPrintValueToString : ['in', 'out free[LLVMDisposeMessage]']
+LLVMPrintValueToString : ['in', 'out free = LLVMDisposeMessage']
 # Values: Constants
 LLVMConstIntOfArbitraryPrecision : ['in', 'size', 'array[arg2] in']
 LLVMConstIntOfStringAndSize : ['in', 'array[arg3] in', 'size', 'in']
@@ -74,7 +75,7 @@ LLVMConstInBoundsGEP : ['in', 'array[arg3] in', 'size']
 LLVMConstExtractValue : ['in', 'array[arg3] in', 'size']
 LLVMConstInsertValue : ['in', 'in', 'array[arg4] in', 'size']
 # Values: Function Constants: Function Parameters
-LLVMGetParams : ['in', 'array[LLVMCountParams (arg1)] out']
+LLVMGetParams : ['in', 'array[LLVMCountParams(arg1)] out']
 
 # Metadata
 LLVMMDStringInContext : ['in', 'array[arg3] in', 'size']
@@ -82,10 +83,10 @@ LLVMMDString : ['array[arg2] in', 'size']
 LLVMMDNodeInContext : ['in', 'array[arg3] in', 'size']
 LLVMMDNode : ['array[arg2] in', 'size']
 LLVMGetMDString : ['in', 'size out', 'array[arg2] out']
-LLVMGetMDNodeOperands : ['in', 'array[LLVMGetMDNodeNumOperands (arg1)] out']
+LLVMGetMDNodeOperands : ['in', 'array[LLVMGetMDNodeNumOperands(arg1)] out']
 
 # Basic Block
-LLVMGetBasicBlocks : ['in', 'array[LLVMCountBasicBlocks (arg1)] out']
+LLVMGetBasicBlocks : ['in', 'array[LLVMCountBasicBlocks(arg1)] out']
 
 # Instructions: PHI nodes
 LLVMAddIncoming : ['in', 'array[arg4] in', 'array[arg4] in', 'size']
@@ -96,5 +97,5 @@ LLVMAddIncoming : ['in', 'array[arg4] in', 'array[arg4] in', 'size']
 LLVMGetModuleIdentifier : ['in', 'size out', 'array[arg2] out']
 
 # Instructions
-LLVMGetIndices : ['in', 'array[LLVMGetNumIndices (arg1)] out']
+LLVMGetIndices : ['in', 'array[LLVMGetNumIndices(arg1)] out']
 

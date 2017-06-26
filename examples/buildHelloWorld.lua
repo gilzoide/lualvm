@@ -10,7 +10,7 @@ local i8p = ll.Int8Type ():Pointer (0)
 -- declare `puts`
 local puts_ty = ll.FunctionType (i32, { i8p })
 local puts = M:AddFunction ('puts', puts_ty)
-puts:GetParam (0):AddAttribute (ll.ReadOnlyAttribute + ll.NoCaptureAttribute)
+-- puts:GetParam (0):AddAttribute (ll.ReadOnlyAttribute + ll.NoCaptureAttribute)
 
 -- declare and build `main`
 local main_ty = ll.FunctionType (i32, { i32, i8p:Pointer (0) })

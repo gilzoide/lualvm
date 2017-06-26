@@ -1,4 +1,4 @@
-# Copyright 2016 Gil Barbosa Reis <gilzoide@gmail.com>
+# Copyright 2016-2017 Gil Barbosa Reis <gilzoide@gmail.com>
 # This file is part of Lualvm.
 #
 # Lualvm is free software: you can redistribute it and/or modify
@@ -28,12 +28,12 @@ ignore :
 
 ---
 
-LLVMCreateExecutionEngineForModule : ['out', 'in', 'out free[LLVMDisposeMessage]']
-LLVMCreateInterpreterForModule : ['out', 'in', 'out free[LLVMDisposeMessage]']
-LLVMCreateJITCompilerForModule : ['out', 'in', 'in', 'out free[LLVMDisposeMessage]']
+LLVMCreateExecutionEngineForModule : ['out', 'in', 'out free = LLVMDisposeMessage']
+LLVMCreateInterpreterForModule : ['out', 'in', 'out free = LLVMDisposeMessage']
+LLVMCreateJITCompilerForModule : ['out', 'in', 'in', 'out free = LLVMDisposeMessage']
 LLVMInitializeMCJITCompilerOptions : ['array[arg2] in', 'size']
-LLVMCreateMCJITCompilerForModule : ['out', 'in', 'array[arg4] in', 'size', 'out free[LLVMDisposeMessage]'] # ignored for now, but it is bindable
+LLVMCreateMCJITCompilerForModule : ['out', 'in', 'array[arg4] in', 'size', 'out free = LLVMDisposeMessage'] # ignored for now, but it is bindable
 LLVMRunFunctionAsMain : ['in', 'in', 'size', 'array[arg3] in', 'array[_] in']
 LLVMRunFunction : ['in', 'in', 'size', 'array[arg3] in']
-LLVMRemoveModule : ['in', 'in', 'out', 'out free[LLVMDisposeMessage]']
+LLVMRemoveModule : ['in', 'in', 'out', 'out free = LLVMDisposeMessage']
 LLVMFindFunction : ['in', 'in', 'out']
