@@ -27,8 +27,8 @@ local bind = {}
 local function find_on_llvm (func_name)
 	local f = ll[func_name]
 	if f == nil then
-		io.stderr:write(string.format (
-				"[lualvm.bind] Couldn't find '%s' function in LLVM bindings\n",
+		io.stderr:write (string.format (
+				"[lualvm.bind] WARNING: Couldn't find %q function in LLVM bindings\n",
 				func_name))
 	end
 	return f

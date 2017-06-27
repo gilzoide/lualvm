@@ -21,7 +21,11 @@ headers :
 
 ignore :
   # Deprecated
+  - LLVMParseBitcode
+  - LLVMParseBitcodeInContext
   - LLVMGetBitcodeModuleInContext
+  - LLVMGetBitcodeModule
+  - LLVMWriteBitcodeToFileHandle
 
 ---
 
@@ -29,10 +33,7 @@ ignore :
 LLVMParseIRInContext : ['in', 'in', 'out', 'out free = LLVMDisposeMessage']
 
 # BitReader
-LLVMParseBitcode : ['in', 'out', 'out free = LLVMDisposeMessage']
 LLVMParseBitcode2 : ['in', 'out']
-LLVMParseBitcodeInContext : ['in', 'in', 'out', 'out free = LLVMDisposeMessage']
 LLVMParseBitcodeInContext2 : ['in', 'in', 'out']
 LLVMGetBitcodeModuleInContext2 : ['in', 'in', 'out']
-LLVMGetBitcodeModule : ['in', 'out', 'out free = LLVMDisposeMessage']
 LLVMGetBitcodeModule2 : ['in', 'out']
